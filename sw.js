@@ -1,5 +1,5 @@
 /* PocketPDF Scanner — service worker: offline app shell + cached libraries. */
-const VERSION = 'v1.1.0';
+const VERSION = 'v1.1.1';
 const SHELL_CACHE = `pocketpdf-shell-${VERSION}`;
 const LIB_CACHE = 'pocketpdf-libs-v1'; // bump only when files in vendor/ change
 
@@ -26,8 +26,9 @@ const LIBS = ['vendor/Sortable.min.js', 'vendor/jspdf.umd.min.js'];
 self.addEventListener('install', (event) => {
   event.waitUntil(
     Promise.all([
-      caches.open(SHELL_CACHE).then((c) => c.addAll(SHELL)),
-      caches.open(LIB_CACHE).then((c) => c.addAll(LIBS)),
+      // cache: 'reload' bypasses the browser's HTTP cache so an update never stores stale files
+      caches.open(SHELL_CACHE).then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: 'reload' })))),
+      caches.open(LIB_CACHE).then((c) => c.addAll(LIBS.map((u) => new Request(u, { cache: 'reload' })))),
     ])
   );
 });
