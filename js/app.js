@@ -1710,6 +1710,7 @@
     if (!('serviceWorker' in navigator)) return;
     const local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     if (location.protocol !== 'https:' && !local) return;
+    const hadController = !!navigator.serviceWorker.controller;
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').then((reg) => {
         reg.addEventListener('updatefound', () => {
@@ -1728,7 +1729,8 @@
         });
       }).catch((err) => console.warn('Service worker registration failed:', err));
 
-      let reloaded = false;
+      // Only reload when an existing version is replaced (not on the very first install)
+      let reloaded = !hadController;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (reloaded) return;
         reloaded = true;
