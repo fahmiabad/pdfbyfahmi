@@ -212,14 +212,14 @@
   // ==================== TOASTS (with optional action) ====================
   function showToast(message, type = 'info', duration = 3200, action = null) {
     const colors = {
-      info: 'bg-slate-900 text-white',
-      success: 'bg-emerald-600 text-white',
-      warning: 'bg-amber-600 text-white',
-      error: 'bg-rose-600 text-white',
+      info: 'bg-fh-navy text-white',
+      success: 'bg-fh-blue text-white',
+      warning: 'bg-fh-coral text-fh-navy',
+      error: 'bg-fh-coral text-fh-navy',
     };
     const toast = document.createElement('div');
     toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
-    toast.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-lg text-xs sm:text-sm font-medium transition-all duration-200 opacity-0 -translate-y-2 flex items-center justify-between gap-3 ${colors[type] || colors.info}`;
+    toast.className = `pointer-events-auto px-4 py-3 text-xs sm:text-sm font-semibold transition-all duration-200 opacity-0 -translate-y-2 flex items-center justify-between gap-3 ${colors[type] || colors.info}`;
     const text = document.createElement('span');
     text.textContent = message;
     toast.appendChild(text);
@@ -236,7 +236,7 @@
     if (action) {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'shrink-0 min-h-[36px] px-3 rounded-xl bg-white/15 hover:bg-white/25 font-bold text-xs uppercase tracking-wide';
+      btn.className = 'shrink-0 min-h-[36px] px-3 bg-white/15 hover:bg-white/25 font-bold text-xs uppercase tracking-widest';
       btn.textContent = action.label;
       btn.addEventListener('click', () => {
         const onExpire = action.onExpire;
@@ -325,16 +325,16 @@
 
   // ==================== OPENCV (LAZY) ====================
   function setEngineStatus(mode) {
-    const base = 'inline-flex items-center gap-1.5 mt-0.5 px-2 py-0.5 rounded-full border text-[11px] font-semibold ';
+    const base = 'inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 text-[11px] font-semibold ';
     const modes = {
-      idle: ['bg-slate-100 border-slate-200 text-slate-600', 'bg-slate-400', 'Auto-Crop loads on first scan'],
-      loading: ['bg-amber-50 border-amber-200/80 text-amber-700', 'bg-amber-500 animate-pulse', 'Loading Auto-Crop…'],
-      ready: ['bg-emerald-50 border-emerald-200/80 text-emerald-700', 'bg-emerald-500', 'Auto-Crop Ready'],
-      manual: ['bg-slate-100 border-slate-200 text-slate-600', 'bg-slate-400', 'Manual Crop Mode'],
+      idle: ['bg-fh-navyraised text-fh-mist', 'bg-fh-mist', 'Auto-Crop loads on first scan'],
+      loading: ['bg-fh-navyraised text-fh-sky', 'bg-fh-sky animate-pulse', 'Loading Auto-Crop…'],
+      ready: ['bg-fh-blue text-white', 'bg-fh-sky', 'Auto-Crop Ready'],
+      manual: ['bg-fh-navyraised text-fh-mist', 'bg-fh-mist', 'Manual Crop Mode'],
     };
     const [pill, dot, text] = modes[mode] || modes.idle;
     el.engineStatusPill.className = base + pill;
-    el.engineStatusDot.className = 'w-1.5 h-1.5 rounded-full ' + dot;
+    el.engineStatusDot.className = 'w-1.5 h-1.5 ' + dot;
     el.engineStatusText.textContent = text;
     state.cvReady = mode === 'ready';
   }
@@ -1022,8 +1022,8 @@
     const isCrop = step === 'crop';
     el.studioCropPane.classList.toggle('hidden', !isCrop);
     el.studioFilterPane.classList.toggle('hidden', isCrop);
-    const on = 'min-h-[36px] px-3.5 rounded-lg text-xs font-semibold transition-all bg-indigo-600 text-white shadow-sm';
-    const off = 'min-h-[36px] px-3.5 rounded-lg text-xs font-semibold transition-all text-slate-300 hover:text-white';
+    const on = 'min-h-[36px] px-3.5 text-xs font-semibold transition-all bg-fh-blue text-white';
+    const off = 'min-h-[36px] px-3.5 text-xs font-semibold transition-all text-fh-mist hover:text-white';
     el.tabCropBtn.className = isCrop ? on : off;
     el.tabFilterBtn.className = isCrop ? off : on;
     el.tabCropBtn.setAttribute('aria-selected', String(isCrop));
@@ -1087,14 +1087,14 @@
     ctx.moveTo(pts[0].x, pts[0].y);
     for (let i = 1; i < 4; i++) ctx.lineTo(pts[i].x, pts[i].y);
     ctx.closePath();
-    ctx.fillStyle = 'rgba(2, 6, 23, 0.58)';
+    ctx.fillStyle = 'rgba(11, 31, 58, 0.64)';
     ctx.fill('evenodd');
 
     ctx.beginPath();
     ctx.moveTo(pts[0].x, pts[0].y);
     for (let i = 1; i < 4; i++) ctx.lineTo(pts[i].x, pts[i].y);
     ctx.closePath();
-    ctx.strokeStyle = '#38bdf8';
+    ctx.strokeStyle = '#8FC1FF';
     ctx.lineWidth = 2.5;
     ctx.stroke();
 
@@ -1112,12 +1112,11 @@
       ctx.beginPath();
       const rw = active ? 30 : 26;
       const rh = active ? 12 : 10;
-      if (ctx.roundRect) ctx.roundRect(-rw / 2, -rh / 2, rw, rh, rh / 2);
-      else ctx.rect(-rw / 2, -rh / 2, rw, rh);
+      ctx.rect(-rw / 2, -rh / 2, rw, rh);
       ctx.fillStyle = '#ffffff';
       ctx.fill();
       ctx.lineWidth = 2;
-      ctx.strokeStyle = active ? '#38bdf8' : '#4f46e5';
+      ctx.strokeStyle = active ? '#8FC1FF' : '#1D5FA8';
       ctx.stroke();
       ctx.restore();
     });
@@ -1126,15 +1125,17 @@
     pts.forEach((p, idx) => {
       const active = drag && drag.type === 'corner' && drag.index === idx;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, active ? 15 : 12, 0, Math.PI * 2);
-      ctx.fillStyle = active ? 'rgba(56, 189, 248, 0.45)' : 'rgba(99, 102, 241, 0.35)';
+      const o = active ? 15 : 12;
+      ctx.rect(p.x - o, p.y - o, o * 2, o * 2);
+      ctx.fillStyle = active ? 'rgba(143, 193, 255, 0.5)' : 'rgba(29, 95, 168, 0.4)';
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(p.x, p.y, active ? 9 : 7.5, 0, Math.PI * 2);
+      const i = active ? 9 : 7.5;
+      ctx.rect(p.x - i, p.y - i, i * 2, i * 2);
       ctx.fillStyle = '#ffffff';
       ctx.fill();
       ctx.lineWidth = 2.5;
-      ctx.strokeStyle = active ? '#38bdf8' : '#4f46e5';
+      ctx.strokeStyle = active ? '#8FC1FF' : '#1D5FA8';
       ctx.stroke();
     });
     ctx.restore();
@@ -1172,11 +1173,11 @@
     if (sx + sw > src.width) { const o = sx + sw - src.width; sw -= o; dw -= o * kx; }
     if (sy + sh > src.height) { const o = sy + sh - src.height; sh -= o; dh -= o * ky; }
 
-    lCtx.fillStyle = '#0f172a';
+    lCtx.fillStyle = '#0B1F3A';
     lCtx.fillRect(0, 0, size, size);
     if (sw > 0 && sh > 0 && dw > 0 && dh > 0) lCtx.drawImage(src, sx, sy, sw, sh, dx, dy, dw, dh);
 
-    lCtx.strokeStyle = '#38bdf8';
+    lCtx.strokeStyle = '#8FC1FF';
     lCtx.lineWidth = 2;
     neighbors.forEach((nb) => {
       lCtx.beginPath();
@@ -1192,8 +1193,8 @@
     lCtx.moveTo(half, half - 14); lCtx.lineTo(half, half + 14);
     lCtx.stroke();
     lCtx.beginPath();
-    lCtx.arc(half, half, 3, 0, Math.PI * 2);
-    lCtx.fillStyle = '#38bdf8';
+    lCtx.rect(half - 3, half - 3, 6, 6);
+    lCtx.fillStyle = '#8FC1FF';
     lCtx.fill();
   }
 
@@ -1452,7 +1453,7 @@
     el.pageList.innerHTML = '';
     state.pages.forEach((page, idx) => {
       const card = document.createElement('article');
-      card.className = 'bg-white rounded-2xl border border-slate-200/90 shadow-sm p-3 space-y-3';
+      card.className = 'bg-fh-surface p-3 space-y-3';
       card.dataset.id = page.id;
       card.setAttribute('aria-label', `Page ${idx + 1}`);
 
@@ -1460,7 +1461,7 @@
       top.className = 'flex items-center gap-3 min-w-0';
 
       const handle = document.createElement('div');
-      handle.className = 'drag-handle self-stretch -ml-1 w-7 shrink-0 flex items-center justify-center rounded-lg text-slate-300 hover:text-slate-500 hover:bg-slate-50';
+      handle.className = 'drag-handle self-stretch -ml-1 w-7 shrink-0 flex items-center justify-center text-fh-muted hover:text-fh-navy hover:bg-fh-rule';
       handle.setAttribute('aria-hidden', 'true');
       handle.title = 'Drag to reorder';
       handle.innerHTML = '<svg class="w-4 h-6" viewBox="0 0 10 16" fill="currentColor"><circle cx="2.5" cy="2.5" r="1.5"/><circle cx="7.5" cy="2.5" r="1.5"/><circle cx="2.5" cy="8" r="1.5"/><circle cx="7.5" cy="8" r="1.5"/><circle cx="2.5" cy="13.5" r="1.5"/><circle cx="7.5" cy="13.5" r="1.5"/></svg>';
@@ -1468,7 +1469,7 @@
       const thumb = document.createElement('button');
       thumb.type = 'button';
       thumb.setAttribute('aria-label', `Edit page ${idx + 1}`);
-      thumb.className = 'relative w-20 h-24 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center active:scale-95 transition-transform';
+      thumb.className = 'relative w-20 h-24 bg-fh-card overflow-hidden shrink-0 flex items-center justify-center active:scale-95 transition-transform';
       thumb.addEventListener('click', () => openStudio(page.id));
       const img = document.createElement('img');
       img.src = page.processedUrl;
@@ -1476,9 +1477,9 @@
       img.decoding = 'async';
       img.className = 'w-full h-full object-contain bg-white';
       const badge = document.createElement('span');
-      badge.className = 'absolute top-1 left-1 px-1.5 py-0.5 rounded-md bg-slate-900/85 text-white text-[10px] font-bold';
+      badge.className = 'absolute top-0 left-0 px-1.5 py-0.5 bg-fh-navy text-white text-[10px] font-bold';
       badge.textContent = `P${idx + 1}`;
-      thumb.append(img, badge);
+      thumb.append(img);
 
       const info = document.createElement('div');
       info.className = 'flex-1 min-w-0 space-y-1.5';
@@ -1486,23 +1487,24 @@
       const titleRow = document.createElement('div');
       titleRow.className = 'flex items-center justify-between gap-2';
       const title = document.createElement('span');
-      title.className = 'text-sm font-bold text-slate-900';
-      title.textContent = `Page ${idx + 1}`;
+      title.className = 'font-display text-3xl font-extrabold text-fh-blue leading-none';
+      title.textContent = String(idx + 1).padStart(2, '0');
+      title.setAttribute('aria-hidden', 'true');
       const chip = document.createElement('span');
-      chip.className = `px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-        page.filter === 'magic' ? 'bg-indigo-50 text-indigo-700' : page.filter === 'bw' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600'
+      chip.className = `px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${
+        page.filter === 'magic' ? 'bg-fh-blue text-white' : page.filter === 'bw' ? 'bg-fh-navy text-white' : 'bg-fh-card text-fh-navy'
       }`;
       chip.textContent = FILTER_LABELS[page.filter] || 'Original';
       titleRow.append(title, chip);
 
       const meta = document.createElement('div');
-      meta.className = 'text-xs text-slate-500 flex items-center gap-2 flex-wrap';
+      meta.className = 'text-xs text-fh-muted flex items-center gap-2 flex-wrap';
       const fmt = page.processedType === 'image/png' ? 'PNG' : 'JPEG';
       meta.textContent = `${page.processedWidth} × ${page.processedHeight} • ${formatBytes(page.processedSize)} • ${fmt}`;
 
       const editBtn = document.createElement('button');
       editBtn.type = 'button';
-      editBtn.className = 'min-h-[40px] w-full px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 active:scale-[0.98] text-indigo-700 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all';
+      editBtn.className = 'min-h-[40px] w-full px-3 py-1.5 bg-fh-blue hover:bg-fh-bluedark active:scale-[0.98] text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-all';
       editBtn.innerHTML = `<svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">${ICONS.sliders}</svg><span>Crop &amp; Filter</span>`;
       editBtn.setAttribute('aria-label', `Crop and filter page ${idx + 1}`);
       editBtn.addEventListener('click', () => openStudio(page.id));
@@ -1511,7 +1513,7 @@
       top.append(handle, thumb, info);
 
       const controls = document.createElement('div');
-      controls.className = 'grid grid-cols-4 gap-2 pt-2 border-t border-slate-100';
+      controls.className = 'grid grid-cols-4 gap-1';
       controls.append(
         makeCardBtn('rotate', 'Rotate', `Rotate page ${idx + 1}`, ICONS.rotate, false, false, () => rotatePageCard(page.id)),
         makeCardBtn('up', 'Up', `Move page ${idx + 1} up`, ICONS.up, idx === 0, false, () => movePage(idx, -1)),
@@ -1530,8 +1532,8 @@
     btn.dataset.act = act;
     btn.disabled = disabled;
     btn.setAttribute('aria-label', aria);
-    btn.className = `min-h-[44px] px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-all active:scale-95 ${
-      danger ? 'bg-rose-50 text-rose-600 hover:bg-rose-100' : 'bg-slate-100 text-slate-700 hover:bg-slate-200/80 disabled:opacity-35 disabled:pointer-events-none'
+    btn.className = `min-h-[44px] px-2 text-xs font-semibold flex items-center justify-center gap-1 transition-all active:scale-95 ${
+      danger ? 'bg-fh-card text-fh-coraltext hover:bg-fh-rule' : 'bg-fh-card text-fh-navy hover:bg-fh-rule disabled:opacity-35 disabled:pointer-events-none'
     }`;
     btn.innerHTML = `<svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">${svgPath}</svg><span class="hidden sm:inline">${label}</span>`;
     btn.addEventListener('click', onClick);
@@ -1914,17 +1916,17 @@
     el.mainArea.addEventListener('dragenter', (e) => {
       e.preventDefault();
       dragDepth++;
-      el.emptyState.classList.add('border-indigo-400', 'bg-indigo-50/40');
+      el.emptyState.classList.add('border-fh-blue', 'bg-fh-rule');
     });
     el.mainArea.addEventListener('dragover', (e) => e.preventDefault());
     el.mainArea.addEventListener('dragleave', () => {
       dragDepth = Math.max(0, dragDepth - 1);
-      if (!dragDepth) el.emptyState.classList.remove('border-indigo-400', 'bg-indigo-50/40');
+      if (!dragDepth) el.emptyState.classList.remove('border-fh-blue', 'bg-fh-rule');
     });
     el.mainArea.addEventListener('drop', (e) => {
       e.preventDefault();
       dragDepth = 0;
-      el.emptyState.classList.remove('border-indigo-400', 'bg-indigo-50/40');
+      el.emptyState.classList.remove('border-fh-blue', 'bg-fh-rule');
       if (e.dataTransfer && e.dataTransfer.files.length) {
         if (el.autoScanToggle.checked) ensureOpenCV();
         handleIncomingFiles(e.dataTransfer.files, false);

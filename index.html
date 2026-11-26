@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>PocketPDF Scanner — Document Scanner & PDF</title>
   <meta name="description" content="Private, offline document scanner. Crop, clean up and turn photos into PDFs entirely on your phone." />
-  <meta name="theme-color" content="#4f46e5" />
+  <meta name="theme-color" content="#0B1F3A" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="PocketPDF" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
@@ -20,10 +20,10 @@
   <script src="js/imaging.js" defer></script>
   <script src="js/app.js" defer></script>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col selection:bg-indigo-100 selection:text-indigo-900">
+<body class="bg-fh-white text-fh-navy font-sans antialiased min-h-screen flex flex-col selection:bg-fh-sky selection:text-fh-navy">
 
   <noscript>
-    <div class="p-4 m-4 rounded-xl bg-amber-50 border border-amber-200 text-sm text-amber-800">PocketPDF Scanner needs JavaScript to run.</div>
+    <div class="p-4 m-4 bg-fh-surface text-sm text-fh-coraltext">PocketPDF Scanner needs JavaScript to run.</div>
   </noscript>
 
   <!-- Hidden File Inputs -->
@@ -31,26 +31,26 @@
   <input type="file" id="galleryInput" accept="image/*,.heic,.heif" multiple class="hidden" aria-hidden="true" tabindex="-1" />
 
   <!-- ==================== TOP HEADER ==================== -->
-  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 pt-safe-header">
+  <header class="sticky top-0 z-30 bg-fh-navy text-white pt-safe-header">
     <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
       <div class="flex items-center gap-2.5 min-w-0">
-        <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-sm shadow-indigo-600/25 shrink-0" aria-hidden="true">
+        <div class="w-10 h-10 bg-fh-blue text-white flex items-center justify-center shrink-0" aria-hidden="true">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 7V5a1 1 0 011-1h2M17 4h2a1 1 0 011 1v2M20 17v2a1 1 0 01-1 1h-2M7 20H5a1 1 0 01-1-1v-2" />
             <path stroke-linecap="round" stroke-linejoin="round" d="M8 9h8M8 13h8M8 17h5" />
           </svg>
         </div>
         <div class="min-w-0">
-          <h1 class="text-base font-bold tracking-tight text-slate-900 leading-tight truncate">PocketPDF Scanner</h1>
-          <div id="engineStatusPill" role="status" class="inline-flex items-center gap-1.5 mt-0.5 px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-600">
-            <span id="engineStatusDot" class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+          <h1 class="font-display text-lg font-extrabold uppercase tracking-tight text-white leading-none truncate">PocketPDF Scanner</h1>
+          <div id="engineStatusPill" role="status" class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 bg-fh-navyraised text-[11px] font-semibold text-fh-mist">
+            <span id="engineStatusDot" class="w-1.5 h-1.5 bg-fh-mist"></span>
             <span id="engineStatusText">Auto-Crop loads on first scan</span>
           </div>
         </div>
       </div>
 
       <button id="clearAllBtn" type="button"
-        class="hidden min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 active:scale-95 transition-all shrink-0">
+        class="hidden min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-semibold text-fh-coralbright bg-fh-navyraised hover:bg-fh-navydeep active:scale-95 transition-all shrink-0">
         Clear All
       </button>
     </div>
@@ -61,7 +61,7 @@
 
     <section aria-label="Scan or add documents" class="grid grid-cols-2 gap-3">
       <button id="takePhotoBtn" type="button"
-        class="min-h-[56px] flex items-center justify-center gap-2.5 px-4 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white font-semibold text-sm shadow-sm shadow-indigo-600/25 transition-all">
+        class="min-h-[56px] flex items-center justify-center gap-2.5 px-4 py-3.5 rounded-2xl bg-fh-blue hover:bg-fh-bluedark active:scale-[0.98] text-white font-semibold text-sm transition-all">
         <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -70,8 +70,8 @@
       </button>
 
       <button id="addPhotosBtn" type="button"
-        class="min-h-[56px] flex items-center justify-center gap-2.5 px-4 py-3.5 rounded-2xl bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-800 font-semibold text-sm border border-slate-200 shadow-sm transition-all">
-        <svg class="w-5 h-5 shrink-0 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        class="min-h-[56px] flex items-center justify-center gap-2.5 px-4 py-3.5 bg-fh-surface hover:bg-fh-rule active:scale-[0.98] text-fh-navy font-semibold text-sm transition-all">
+        <svg class="w-5 h-5 shrink-0 text-fh-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
         <span>Add Photos</span>
@@ -79,65 +79,65 @@
     </section>
 
     <!-- Auto-Scan on Import Toggle -->
-    <section aria-label="Auto scan toggle" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm px-4 py-3 flex items-center justify-between gap-3">
+    <section aria-label="Auto scan toggle" class="bg-fh-surface px-4 py-3 flex items-center justify-between gap-3">
       <div class="min-w-0">
-        <div id="autoScanLabel" class="text-sm font-semibold text-slate-900 flex items-center gap-1.5">
+        <div id="autoScanLabel" class="text-sm font-semibold text-fh-navy flex items-center gap-1.5">
           <span>Auto-Scan on Import</span>
-          <span class="px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wide">Magic</span>
+          <span class="px-1.5 py-0.5 rounded-md bg-fh-card text-fh-blue text-[10px] font-bold uppercase tracking-wide">Magic</span>
         </div>
-        <p id="autoScanDesc" class="text-xs text-slate-500 leading-snug mt-0.5">
+        <p id="autoScanDesc" class="text-xs text-fh-muted leading-snug mt-0.5">
           Auto-detect edges, dewarp &amp; apply Magic Color on added photos.
         </p>
       </div>
       <label class="relative inline-flex items-center cursor-pointer shrink-0 p-1">
         <input type="checkbox" id="autoScanToggle" class="sr-only peer" role="switch" aria-labelledby="autoScanLabel" aria-describedby="autoScanDesc" checked />
-        <div class="w-12 h-7 bg-slate-200 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500 rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[6px] after:left-[6px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:shadow-sm after:transition-all peer-checked:bg-indigo-600"></div>
+        <div class="w-12 h-7 bg-fh-rule peer-focus-visible:ring-2 peer-focus-visible:ring-fh-blue rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[6px] after:left-[6px] after:bg-white after:border-fh-rule after:border after:rounded-full after:h-5 after:w-5 after:shadow-sm after:transition-all peer-checked:bg-fh-blue"></div>
       </label>
     </section>
 
     <!-- Collapsible PDF Settings Drawer -->
-    <section aria-label="PDF settings" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+    <section aria-label="PDF settings" class="bg-fh-surface overflow-hidden">
       <button id="settingsToggleBtn" type="button" aria-expanded="false" aria-controls="settingsBody"
-        class="w-full min-h-[52px] px-4 py-3 flex items-center justify-between gap-3 text-left hover:bg-slate-50/70 transition-colors">
+        class="w-full min-h-[52px] px-4 py-3 flex items-center justify-between gap-3 text-left hover:bg-fh-rule transition-colors">
         <div class="flex items-center gap-2.5 min-w-0">
-          <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0" aria-hidden="true">
+          <div class="w-8 h-8 rounded-xl bg-fh-surface text-fh-navy flex items-center justify-center shrink-0" aria-hidden="true">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
             </svg>
           </div>
           <div class="min-w-0">
-            <div class="text-sm font-semibold text-slate-900">PDF Settings</div>
-            <div id="settingsSummary" class="text-xs text-slate-500 truncate">A4 • Auto • Small margin • Balanced</div>
+            <div class="text-sm font-semibold text-fh-navy">PDF Settings</div>
+            <div id="settingsSummary" class="text-xs text-fh-muted truncate">A4 • Auto • Small margin • Balanced</div>
           </div>
         </div>
-        <svg id="settingsChevron" class="w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <svg id="settingsChevron" class="w-5 h-5 text-fh-muted shrink-0 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
-      <div id="settingsBody" class="hidden border-t border-slate-100 px-4 py-4 space-y-4 bg-slate-50/50">
+      <div id="settingsBody" class="hidden border-t-4 border-fh-white px-4 py-4 space-y-4 bg-fh-surface">
         <div>
-          <label for="filenameInput" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Output Filename</label>
+          <label for="filenameInput" class="block text-xs font-semibold uppercase tracking-wider text-fh-muted mb-1.5">Output Filename</label>
           <div class="relative flex items-center">
             <input type="text" id="filenameInput" autocomplete="off"
-              class="w-full min-h-[44px] pl-3.5 pr-12 py-2.5 rounded-xl bg-white border border-slate-200 text-base sm:text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              class="w-full min-h-[44px] pl-3.5 pr-12 py-2.5 rounded-xl bg-white border border-fh-rule text-base sm:text-sm font-medium text-fh-navy focus:outline-none focus:ring-2 focus:ring-fh-blue focus:border-fh-blue"
               placeholder="scan_2026-01-01" />
-            <span class="absolute right-3.5 text-xs font-semibold text-slate-400 pointer-events-none" aria-hidden="true">.pdf</span>
+            <span class="absolute right-3.5 text-xs font-semibold text-fh-muted pointer-events-none" aria-hidden="true">.pdf</span>
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label for="pageSizeSelect" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Page Size</label>
-            <select id="pageSizeSelect" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-base sm:text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <label for="pageSizeSelect" class="block text-xs font-semibold uppercase tracking-wider text-fh-muted mb-1.5">Page Size</label>
+            <select id="pageSizeSelect" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-fh-rule text-base sm:text-sm font-medium text-fh-navy focus:outline-none focus:ring-2 focus:ring-fh-blue">
               <option value="a4" selected>A4 (210 × 297 mm)</option>
               <option value="letter">US Letter (8.5 × 11 in)</option>
               <option value="fit">Fit to Image</option>
             </select>
           </div>
           <div>
-            <label for="orientationSelect" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Orientation</label>
-            <select id="orientationSelect" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-base sm:text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:bg-slate-100">
+            <label for="orientationSelect" class="block text-xs font-semibold uppercase tracking-wider text-fh-muted mb-1.5">Orientation</label>
+            <select id="orientationSelect" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-fh-rule text-base sm:text-sm font-medium text-fh-navy focus:outline-none focus:ring-2 focus:ring-fh-blue disabled:opacity-50 disabled:bg-fh-surface">
               <option value="auto" selected>Auto (Per Page)</option>
               <option value="portrait">Portrait</option>
               <option value="landscape">Landscape</option>
@@ -147,51 +147,51 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label for="marginSelect" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Margins</label>
-            <select id="marginSelect" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-base sm:text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <label for="marginSelect" class="block text-xs font-semibold uppercase tracking-wider text-fh-muted mb-1.5">Margins</label>
+            <select id="marginSelect" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-fh-rule text-base sm:text-sm font-medium text-fh-navy focus:outline-none focus:ring-2 focus:ring-fh-blue">
               <option value="0">None (0 mm)</option>
               <option value="10" selected>Small (10 mm)</option>
               <option value="20">Normal (20 mm)</option>
             </select>
           </div>
           <div>
-            <label for="qualitySelect" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Quality / Size</label>
-            <select id="qualitySelect" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-base sm:text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <label for="qualitySelect" class="block text-xs font-semibold uppercase tracking-wider text-fh-muted mb-1.5">Quality / Size</label>
+            <select id="qualitySelect" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-fh-rule text-base sm:text-sm font-medium text-fh-navy focus:outline-none focus:ring-2 focus:ring-fh-blue">
               <option value="high">High (Sharp Text)</option>
               <option value="balanced" selected>Balanced (Default)</option>
               <option value="small">Small File (Compact)</option>
             </select>
           </div>
         </div>
-        <p class="text-[11px] text-slate-500 leading-snug">Crisp B&amp;W pages are always kept as lossless PNG for the sharpest text.</p>
+        <p class="text-[11px] text-fh-muted leading-snug">Crisp B&amp;W pages are always kept as lossless PNG for the sharpest text.</p>
       </div>
     </section>
 
     <!-- Scanned Pages Queue -->
     <section aria-label="Scanned pages" class="space-y-3">
-      <div id="emptyState" class="bg-white border-2 border-dashed border-slate-200 rounded-2xl px-6 py-11 text-center space-y-3 transition-colors">
-        <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center" aria-hidden="true">
+      <div id="emptyState" class="bg-fh-surface px-6 py-11 text-center space-y-3 transition-colors">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-fh-card text-fh-blue flex items-center justify-center" aria-hidden="true">
           <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </div>
         <div class="space-y-1">
-          <h2 class="text-base font-semibold text-slate-900">Ready to scan</h2>
-          <p class="text-sm text-slate-500 max-w-xs mx-auto leading-relaxed">
-            Tap <span class="font-medium text-slate-700">Take Photo</span> to scan a document with edge detection &amp; Magic Color, or <span class="font-medium text-slate-700">Add Photos</span> from your gallery.
+          <h2 class="font-display text-2xl font-extrabold uppercase text-fh-navy">Ready to scan.</h2>
+          <p class="text-sm text-fh-muted max-w-xs mx-auto leading-relaxed">
+            Tap <span class="font-medium text-fh-navy">Take Photo</span> to scan a document with edge detection &amp; Magic Color, or <span class="font-medium text-fh-navy">Add Photos</span> from your gallery.
           </p>
-          <p class="text-[11px] font-medium text-emerald-700 pt-1">
+          <p class="text-xs font-semibold text-fh-blue pt-1">
             100% Private — all scanning &amp; PDF creation runs on your device, even offline.
           </p>
         </div>
       </div>
 
       <div id="queueHeader" class="hidden flex items-center justify-between px-1">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-fh-muted">
           Scanned Pages (<span id="queueCountLabel">0</span>)
         </h2>
-        <span class="text-xs text-slate-400">Drag ⠿ to reorder</span>
+        <span class="text-xs text-fh-muted">Drag ⠿ to reorder</span>
       </div>
 
       <div id="pageList" class="space-y-3"></div>
@@ -199,10 +199,10 @@
   </main>
 
   <!-- ==================== STICKY BOTTOM ACTION BAR ==================== -->
-  <footer class="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_20px_rgba(15,23,42,0.06)] pb-safe">
+  <footer class="fixed bottom-0 inset-x-0 z-30 bg-fh-white pb-safe">
     <div class="max-w-xl mx-auto px-4 pt-3 flex items-center gap-3">
       <button id="createPdfBtn" type="button" disabled
-        class="w-full min-h-[52px] px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] disabled:bg-slate-200 disabled:text-slate-400 disabled:active:scale-100 disabled:cursor-not-allowed text-white font-semibold text-sm shadow-sm shadow-indigo-600/25 disabled:shadow-none flex items-center justify-center gap-2 transition-all">
+        class="w-full min-h-[52px] px-5 py-3 rounded-2xl bg-fh-blue hover:bg-fh-bluedark active:scale-[0.98] disabled:bg-fh-rule disabled:text-fh-muted disabled:active:scale-100 disabled:cursor-not-allowed text-white font-semibold text-sm disabled:shadow-none flex items-center justify-center gap-2 transition-all">
         <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
         </svg>
@@ -213,23 +213,23 @@
 
   <!-- ==================== FULL-SCREEN CROP & FILTER STUDIO ==================== -->
   <div id="studioModal" role="dialog" aria-modal="true" aria-label="Document crop and filter studio"
-    class="hidden fixed inset-0 z-50 bg-slate-950 text-white flex flex-col">
-    <div class="pt-safe px-3 pb-2.5 bg-slate-900/95 border-b border-slate-800 flex items-center justify-between gap-2 shrink-0">
+    class="hidden fixed inset-0 z-50 bg-fh-navy text-white flex flex-col">
+    <div class="pt-safe px-3 pb-2.5 bg-fh-navydeep flex items-center justify-between gap-2 shrink-0">
       <button id="studioCloseBtn" type="button" aria-label="Cancel editing"
-        class="min-h-[44px] px-3 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 text-sm font-medium flex items-center gap-1 transition-colors">
+        class="min-h-[44px] px-3 rounded-xl text-fh-mist hover:text-white hover:bg-fh-navyraised text-sm font-medium flex items-center gap-1 transition-colors">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
         <span class="hidden sm:inline">Cancel</span>
       </button>
 
-      <div class="bg-slate-800 p-1 rounded-xl flex items-center gap-1" role="tablist" aria-label="Editing step">
-        <button id="tabCropBtn" type="button" role="tab" aria-selected="true" class="min-h-[36px] px-3.5 rounded-lg text-xs font-semibold transition-all bg-indigo-600 text-white shadow-sm">1. Crop</button>
-        <button id="tabFilterBtn" type="button" role="tab" aria-selected="false" class="min-h-[36px] px-3.5 rounded-lg text-xs font-semibold transition-all text-slate-300 hover:text-white">2. Magic Filters</button>
+      <div class="bg-fh-navyraised p-1 rounded-xl flex items-center gap-1" role="tablist" aria-label="Editing step">
+        <button id="tabCropBtn" type="button" role="tab" aria-selected="true" class="min-h-[36px] px-3.5 rounded-lg text-xs font-semibold transition-all bg-fh-blue text-white shadow-sm">1. Crop</button>
+        <button id="tabFilterBtn" type="button" role="tab" aria-selected="false" class="min-h-[36px] px-3.5 rounded-lg text-xs font-semibold transition-all text-fh-mist hover:text-white">2. Magic Filters</button>
       </div>
 
       <button id="studioPrimaryBtn" type="button"
-        class="min-h-[44px] px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-sm font-semibold transition-all">
+        class="min-h-[44px] px-4 rounded-xl bg-fh-blue hover:bg-fh-bluedark active:scale-95 text-white text-sm font-semibold transition-all">
         Next
       </button>
     </div>
@@ -240,8 +240,8 @@
         <canvas id="cropCanvas" class="block rounded-lg shadow-2xl" aria-label="Drag the corner or edge handles to fit the document"></canvas>
 
         <div id="cropLoading" class="hidden absolute inset-0 flex items-center justify-center">
-          <div class="px-4 py-2.5 rounded-2xl bg-slate-900 border border-slate-700 text-xs font-semibold flex items-center gap-2">
-            <svg class="w-4 h-4 animate-spin text-indigo-400" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+          <div class="px-4 py-2.5 rounded-2xl bg-fh-navy text-xs font-semibold flex items-center gap-2">
+            <svg class="w-4 h-4 animate-spin text-fh-sky" fill="none" viewBox="0 0 24 24" aria-hidden="true">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
             </svg>
@@ -250,33 +250,33 @@
         </div>
 
         <div id="loupeContainer" aria-hidden="true"
-          class="hidden fixed z-50 pointer-events-none w-[116px] h-[116px] rounded-full border-[3px] border-indigo-400 shadow-[0_8px_30px_rgba(0,0,0,0.65)] overflow-hidden bg-slate-900">
+          class="hidden fixed z-50 pointer-events-none w-[116px] h-[116px] rounded-full border-[3px] border-fh-blue overflow-hidden bg-fh-navy">
           <canvas id="loupeCanvas" width="116" height="116" class="w-full h-full block"></canvas>
         </div>
       </div>
 
-      <div class="bg-slate-900/95 border-t border-slate-800 px-4 pt-3 pb-safe shrink-0">
+      <div class="bg-fh-navydeep px-4 pt-3 pb-safe shrink-0">
         <div class="max-w-md mx-auto grid grid-cols-4 gap-2">
           <button id="cropAutoBtn" type="button" class="studio-tool">
-            <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="w-4 h-4 text-fh-sky" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
             </svg>
             <span>Auto-Detect</span>
           </button>
           <button id="cropFullBtn" type="button" class="studio-tool">
-            <svg class="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="w-4 h-4 text-fh-mist" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
             </svg>
             <span>Full Page</span>
           </button>
           <button id="cropRotateBtn" type="button" class="studio-tool">
-            <svg class="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="w-4 h-4 text-fh-mist" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             <span>Rotate 90°</span>
           </button>
           <button id="cropAspectBtn" type="button" class="studio-tool" aria-label="Page shape: Auto. Tap to change">
-            <svg class="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="w-4 h-4 text-fh-mist" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <rect x="6" y="3" width="12" height="18" rx="1.5" stroke-linejoin="round" />
               <path stroke-linecap="round" d="M9 8h6M9 12h6" />
             </svg>
@@ -290,9 +290,9 @@
     <div id="studioFilterPane" class="hidden flex-1 flex flex-col min-h-0">
       <div class="flex-1 min-h-0 w-full flex items-center justify-center p-4 overflow-hidden relative">
         <canvas id="filterPreviewCanvas" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl bg-white" aria-label="Filtered page preview"></canvas>
-        <div id="filterLoadingBadge" class="hidden absolute inset-0 bg-slate-950/60 flex items-center justify-center">
-          <div class="px-4 py-2.5 rounded-2xl bg-slate-900 border border-slate-700 text-xs font-semibold flex items-center gap-2">
-            <svg class="w-4 h-4 animate-spin text-indigo-400" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+        <div id="filterLoadingBadge" class="hidden absolute inset-0 bg-fh-navy/70 flex items-center justify-center">
+          <div class="px-4 py-2.5 rounded-2xl bg-fh-navy text-xs font-semibold flex items-center gap-2">
+            <svg class="w-4 h-4 animate-spin text-fh-sky" fill="none" viewBox="0 0 24 24" aria-hidden="true">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
             </svg>
@@ -301,7 +301,7 @@
         </div>
       </div>
 
-      <div class="bg-slate-900/95 border-t border-slate-800 px-4 pt-3 pb-safe space-y-3.5 shrink-0">
+      <div class="bg-fh-navydeep px-4 pt-3 pb-safe space-y-3.5 shrink-0">
         <div class="max-w-md mx-auto space-y-3.5">
           <div id="filterPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5" role="group" aria-label="Filter presets">
             <button type="button" data-filter="original" aria-pressed="false" class="filter-pill">Original</button>
@@ -313,24 +313,24 @@
 
           <div class="grid grid-cols-2 gap-4 pt-1">
             <div class="space-y-1">
-              <div class="flex items-center justify-between text-[11px] font-medium text-slate-300">
+              <div class="flex items-center justify-between text-[11px] font-medium text-fh-mist">
                 <label for="brightnessSlider">Brightness</label>
-                <span id="brightnessVal" class="text-indigo-300 font-semibold">0</span>
+                <span id="brightnessVal" class="text-fh-sky font-semibold">0</span>
               </div>
               <input id="brightnessSlider" type="range" min="-50" max="50" value="0" class="scanner-slider w-full" />
             </div>
             <div class="space-y-1">
-              <div class="flex items-center justify-between text-[11px] font-medium text-slate-300">
+              <div class="flex items-center justify-between text-[11px] font-medium text-fh-mist">
                 <label for="contrastSlider">Contrast</label>
-                <span id="contrastVal" class="text-indigo-300 font-semibold">0</span>
+                <span id="contrastVal" class="text-fh-sky font-semibold">0</span>
               </div>
               <input id="contrastSlider" type="range" min="-50" max="50" value="0" class="scanner-slider w-full" />
             </div>
           </div>
 
           <button id="saveNextBtn" type="button"
-            class="hidden w-full min-h-[46px] px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-[0.98] text-slate-100 text-sm font-semibold flex items-center justify-center gap-2 transition-all">
-            <svg class="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            class="hidden w-full min-h-[46px] px-4 py-2.5 rounded-xl bg-fh-navyraised hover:bg-fh-blue active:scale-[0.98] text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all">
+            <svg class="w-4 h-4 text-fh-sky" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -343,36 +343,36 @@
 
   <!-- ==================== PDF READY / SHARE MODAL ==================== -->
   <div id="pdfReadyModal" role="dialog" aria-modal="true" aria-labelledby="pdfReadyTitle"
-    class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl space-y-5">
+    class="hidden fixed inset-0 z-50 bg-fh-navy/70 flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-fh-white p-6 space-y-5">
       <div class="flex items-center gap-3.5">
-        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0" aria-hidden="true">
+        <div class="w-12 h-12 rounded-2xl bg-fh-blue text-white flex items-center justify-center shrink-0" aria-hidden="true">
           <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
         <div class="min-w-0">
-          <h3 id="pdfReadyTitle" class="text-base font-bold text-slate-900">PDF Ready!</h3>
-          <p id="pdfReadyMeta" class="text-xs text-slate-500 truncate">scan.pdf • 1.2 MB</p>
+          <h3 id="pdfReadyTitle" class="font-display text-xl font-extrabold uppercase text-fh-navy">PDF ready.</h3>
+          <p id="pdfReadyMeta" class="text-xs text-fh-muted truncate">scan.pdf • 1.2 MB</p>
         </div>
       </div>
       <div class="space-y-2.5">
         <button id="pdfShareBtn" type="button"
-          class="hidden w-full min-h-[48px] px-4 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm flex items-center justify-center gap-2 transition-colors">
+          class="hidden w-full min-h-[48px] px-4 py-3 rounded-xl bg-fh-blue hover:bg-fh-bluedark text-white font-semibold text-sm flex items-center justify-center gap-2 transition-colors">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
           </svg>
           <span>Share / Save to Files</span>
         </button>
         <button id="pdfDownloadAgainBtn" type="button"
-          class="w-full min-h-[48px] px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-sm flex items-center justify-center gap-2 transition-colors">
+          class="w-full min-h-[48px] px-4 py-3 rounded-xl bg-fh-surface hover:bg-fh-rule text-fh-navy font-semibold text-sm flex items-center justify-center gap-2 transition-colors">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
           <span>Download PDF</span>
         </button>
         <button id="pdfReadyCloseBtn" type="button"
-          class="w-full min-h-[44px] px-4 py-2 rounded-xl text-slate-500 hover:text-slate-700 font-semibold text-xs transition-colors">
+          class="w-full min-h-[44px] px-4 py-2 rounded-xl text-fh-muted hover:text-fh-navy font-semibold text-xs transition-colors">
           Done
         </button>
       </div>
@@ -381,37 +381,37 @@
 
   <!-- ==================== PROGRESS MODAL ==================== -->
   <div id="progressModal" role="dialog" aria-modal="true" aria-labelledby="progressTitle"
-    class="hidden fixed inset-0 z-[60] bg-slate-900/55 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl space-y-4">
+    class="hidden fixed inset-0 z-[60] bg-fh-navy/70 flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-fh-white p-6 space-y-4">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0" aria-hidden="true">
+        <div class="w-10 h-10 rounded-2xl bg-fh-card text-fh-blue flex items-center justify-center shrink-0" aria-hidden="true">
           <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
         </div>
         <div class="min-w-0">
-          <h3 id="progressTitle" class="text-base font-bold text-slate-900">Processing</h3>
-          <p id="progressStatus" aria-live="polite" class="text-xs text-slate-500 truncate">Please wait...</p>
+          <h3 id="progressTitle" class="font-display text-lg font-extrabold text-fh-navy">Processing</h3>
+          <p id="progressStatus" aria-live="polite" class="text-xs text-fh-muted truncate">Please wait...</p>
         </div>
       </div>
-      <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden" role="progressbar" aria-labelledby="progressTitle" aria-valuemin="0" aria-valuemax="100">
-        <div id="progressBar" class="h-full bg-indigo-600 rounded-full transition-all duration-200" style="width: 0%"></div>
+      <div class="w-full h-2.5 bg-fh-surface rounded-full overflow-hidden" role="progressbar" aria-labelledby="progressTitle" aria-valuemin="0" aria-valuemax="100">
+        <div id="progressBar" class="h-full bg-fh-blue rounded-full transition-all duration-200" style="width: 0%"></div>
       </div>
     </div>
   </div>
 
   <!-- ==================== CONFIRM CLEAR MODAL ==================== -->
   <div id="confirmClearModal" role="alertdialog" aria-modal="true" aria-labelledby="confirmClearTitle" aria-describedby="confirmClearDesc"
-    class="hidden fixed inset-0 z-50 bg-slate-900/55 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl space-y-5">
+    class="hidden fixed inset-0 z-50 bg-fh-navy/70 flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-fh-white p-6 space-y-5">
       <div class="space-y-1.5">
-        <h3 id="confirmClearTitle" class="text-base font-bold text-slate-900">Clear all scanned pages?</h3>
-        <p id="confirmClearDesc" class="text-sm text-slate-500">This removes all pages from your current session. Your original phone photos are untouched.</p>
+        <h3 id="confirmClearTitle" class="font-display text-lg font-extrabold text-fh-navy">Clear all scanned pages?</h3>
+        <p id="confirmClearDesc" class="text-sm text-fh-muted">This removes all pages from your current session. Your original phone photos are untouched.</p>
       </div>
       <div class="grid grid-cols-2 gap-3">
-        <button id="cancelClearBtn" type="button" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm">Cancel</button>
-        <button id="confirmClearBtn" type="button" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-sm">Clear All</button>
+        <button id="cancelClearBtn" type="button" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-fh-surface hover:bg-fh-rule text-fh-navy font-semibold text-sm">Cancel</button>
+        <button id="confirmClearBtn" type="button" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-fh-coral hover:bg-fh-coralbright text-fh-navy font-semibold text-sm">Clear All</button>
       </div>
     </div>
   </div>

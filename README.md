@@ -27,6 +27,7 @@ js/worker.js           Background worker that runs imaging.js off the main threa
 sw.js                  Service worker (offline support)
 manifest.webmanifest   Install-to-home-screen metadata
 icons/                 App icons
+fonts/                 Archivo + IBM Plex Sans (self-hosted, SIL OFL)
 vendor/                Self-hosted libraries: jsPDF, OpenCV.js, heic2any, SortableJS
 ```
 
@@ -43,4 +44,5 @@ Then open http://localhost:8000. The service worker also runs on localhost. Open
 ## Notes
 - OpenCV (~10 MB) loads only the first time someone scans, then stays cached for offline use.
 - Pages are saved in the browser's IndexedDB, so they survive a reload or the phone closing the tab. "Clear All" erases them.
-- Libraries: jsPDF (MIT), OpenCV.js (Apache 2.0), heic2any (MIT), SortableJS (MIT).
+- Libraries: jsPDF (MIT), OpenCV.js (Apache 2.0), heic2any (MIT), SortableJS (MIT). Fonts: Archivo and IBM Plex Sans (SIL Open Font License).
+- Visual style follows the "Fahmi Hassan" design system: navy/white, square solid blocks, Archivo headlines, coral for warnings only, blue for the main actions.
