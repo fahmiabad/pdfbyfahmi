@@ -27,7 +27,9 @@ js/worker.js           Background worker that runs imaging.js off the main threa
 sw.js                  Service worker (offline support)
 manifest.webmanifest   Install-to-home-screen metadata
 icons/                 App icons
-fonts/                 Bricolage Grotesque + Figtree (self-hosted, SIL OFL)
+fonts/                 Bricolage Grotesque + Figtree (self-hosted)
+licenses/              Full licence texts for all third-party software
+about.html             Privacy & credits page
 vendor/                Self-hosted libraries: jsPDF, OpenCV.js, heic2any, SortableJS
 ```
 
@@ -48,4 +50,4 @@ Then open http://localhost:8000. The service worker also runs on localhost. Open
 ## Notes
 - Auto-crop (OpenCV, ~10 MB) starts loading as soon as the app opens and is cached for offline use after the first visit. With Data Saver on, it waits until the first scan.
 - Pages are saved in the browser's IndexedDB, so they survive a reload or the phone closing the tab. "Clear All" erases them.
-- Libraries: jsPDF (MIT), OpenCV.js (Apache 2.0), heic2any (MIT), SortableJS (MIT). Fonts: Bricolage Grotesque and Figtree (SIL Open Font License).
+- Third-party software and its licences are listed in `licenses/README.md` and on the in-app Privacy & credits page (`about.html`).

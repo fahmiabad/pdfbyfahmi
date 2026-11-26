@@ -1,11 +1,12 @@
 /* PocketPDF Scanner — service worker: offline app shell + cached libraries. */
-const VERSION = 'v2.0.2'; // must match index.html, js/app.js and css/app.css (see set-version.sh)
+const VERSION = 'v2.1.0'; // must match index.html, js/app.js and css/app.css (see set-version.sh)
 const SHELL_CACHE = `pocketpdf-shell-${VERSION}`;
 const LIB_CACHE = 'pocketpdf-libs-v1'; // bump only when files in vendor/ change
 
 const SHELL = [
   './',
   'index.html',
+  'about.html',
   'css/app.css',
   'js/app.js',
   'js/imaging.js',
@@ -84,11 +85,14 @@ self.addEventListener('fetch', (event) => {
   const isLib = url.pathname.includes('/vendor/');
   const cacheName = isLib ? LIB_CACHE : SHELL_CACHE;
 
-  // Navigations: serve the cached shell so the app opens offline
+  // Navigations: serve the requested page from the offline copy (the app itself for the start URL)
   if (req.mode === 'navigate') {
-    event.respondWith(
-      caches.match('index.html', { cacheName: SHELL_CACHE }).then((hit) => hit || fetch(req))
-    );
+    event.respondWith((async () => {
+      const opts = { cacheName: SHELL_CACHE, ignoreSearch: true };
+      const hit = (await caches.match(req, opts)) ||
+        (url.pathname.endsWith('/') ? await caches.match(new URL('index.html', self.location.href).href, opts) : undefined);
+      return hit || fetch(req);
+    })());
     return;
   }
 

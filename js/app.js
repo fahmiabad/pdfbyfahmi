@@ -9,7 +9,7 @@
   'use strict';
 
   // ==================== CONSTANTS ====================
-  const APP_VERSION = 'v2.0.2'; // must match sw.js, index.html and css/app.css (see set-version.sh)
+  const APP_VERSION = 'v2.1.0'; // must match sw.js, index.html and css/app.css (see set-version.sh)
   const MAX_SOURCE_DIM = 2200;
   const PROXY_MAX_DIM = 1000;
   const DETECT_MAX_DIM = 500;
