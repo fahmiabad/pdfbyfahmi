@@ -3,419 +3,386 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>PocketPDF Scanner — Document Scanner & PDF</title>
-  <meta name="description" content="Private, offline document scanner. Crop, clean up and turn photos into PDFs entirely on your phone." />
-  <meta name="theme-color" content="#0B1F3A" />
+  <title>PocketPDF Scanner by BigPharmi</title>
+  <meta name="description" content="Scan paper into clean PDFs on your phone. Cropping, clean-up and PDF creation all happen on your device. Made by BigPharmi." />
+  <meta name="author" content="BigPharmi" />
+  <meta name="theme-color" content="#F1F3F0" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="PocketPDF" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="preload" href="fonts/bricolage-grotesque-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="fonts/figtree-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="css/app.css" />
 
-  <!-- Small, always-needed libraries (self-hosted). jsPDF, OpenCV and heic2any load on demand. -->
   <script src="vendor/Sortable.min.js" defer></script>
   <script src="js/imaging.js" defer></script>
   <script src="js/app.js" defer></script>
 </head>
-<body class="bg-fh-white text-fh-navy font-sans antialiased min-h-screen flex flex-col selection:bg-fh-sky selection:text-fh-navy">
+<body class="bg-paper text-graphite font-sans antialiased min-h-screen flex flex-col selection:bg-hilite selection:text-graphite">
 
   <noscript>
-    <div class="p-4 m-4 bg-fh-surface text-sm text-fh-coraltext">PocketPDF Scanner needs JavaScript to run.</div>
+    <p class="m-5 p-4 rounded-xl bg-sheet text-sm">PocketPDF needs JavaScript turned on.</p>
   </noscript>
 
-  <!-- Hidden File Inputs -->
   <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" aria-hidden="true" tabindex="-1" />
   <input type="file" id="galleryInput" accept="image/*,.heic,.heif" multiple class="hidden" aria-hidden="true" tabindex="-1" />
 
-  <!-- ==================== TOP HEADER ==================== -->
-  <header class="sticky top-0 z-30 bg-fh-navy text-white pt-safe-header">
-    <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2.5 min-w-0">
-        <div class="w-10 h-10 bg-fh-blue text-white flex items-center justify-center shrink-0" aria-hidden="true">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 7V5a1 1 0 011-1h2M17 4h2a1 1 0 011 1v2M20 17v2a1 1 0 01-1 1h-2M7 20H5a1 1 0 01-1-1v-2" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 9h8M8 13h8M8 17h5" />
-          </svg>
-        </div>
-        <div class="min-w-0">
-          <h1 class="font-display text-lg font-extrabold uppercase tracking-tight text-white leading-none truncate">PocketPDF Scanner</h1>
-          <div id="engineStatusPill" role="status" class="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 bg-fh-navyraised text-[11px] font-semibold text-fh-mist">
-            <span id="engineStatusDot" class="w-1.5 h-1.5 bg-fh-mist"></span>
-            <span id="engineStatusText">Starting Auto-Crop…</span>
-          </div>
+  <!-- ==================== HEADER ==================== -->
+  <header class="pt-safe-header">
+    <div class="max-w-xl mx-auto px-5 pt-5 pb-2 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <svg class="w-10 h-10 shrink-0" viewBox="0 0 40 40" aria-hidden="true">
+          <rect width="40" height="40" rx="12" fill="#2F4BFF" />
+          <rect x="11" y="8" width="18" height="24" rx="2.5" fill="#fff" />
+          <rect x="14" y="13" width="12" height="2" rx="1" fill="#C9D0DA" />
+          <rect x="14" y="17.5" width="12" height="2" rx="1" fill="#C9D0DA" />
+          <rect x="9" y="21.5" width="22" height="4" rx="1" fill="#FFE14D" />
+          <rect x="14" y="27" width="8" height="2" rx="1" fill="#C9D0DA" />
+        </svg>
+        <div class="min-w-0 leading-none">
+          <h1 class="font-display text-[1.375rem] font-extrabold tracking-tight">PocketPDF</h1>
+          <p class="mt-1 text-[13px] font-medium text-muted">by BigPharmi</p>
         </div>
       </div>
 
-      <button id="clearAllBtn" type="button"
-        class="hidden min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-semibold text-fh-coralbright bg-fh-navyraised hover:bg-fh-navydeep active:scale-95 transition-all shrink-0">
-        Clear All
-      </button>
+      <div id="engineStatusPill" role="status" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sheet text-xs font-semibold text-muted">
+        <span id="engineStatusDot" class="w-2 h-2 rounded-full bg-line"></span>
+        <span id="engineStatusText">Starting auto-crop</span>
+      </div>
     </div>
   </header>
 
-  <!-- ==================== MAIN WORKSPACE ==================== -->
-  <main id="mainArea" class="flex-1 w-full max-w-xl mx-auto px-4 pt-4 pb-32 space-y-4">
+  <!-- ==================== MAIN ==================== -->
+  <main id="mainArea" class="flex-1 w-full max-w-xl mx-auto px-5 pt-3 pb-36">
 
-    <section aria-label="Scan or add documents" class="grid grid-cols-2 gap-3">
+    <!-- Empty-state hero: a sheet being scanned -->
+    <section id="emptyState" class="pt-4 pb-6">
+      <div class="hero-sheet-wrap" aria-hidden="true">
+        <div class="hero-sheet">
+          <span class="hero-line w-[62%]"></span>
+          <span class="hero-line w-[88%]"></span>
+          <span class="hero-line w-[80%]"></span>
+          <span class="hero-line hero-line--mark w-[70%]"></span>
+          <span class="hero-line w-[84%]"></span>
+          <span class="hero-line w-[46%]"></span>
+          <span class="hero-stamp"></span>
+          <span class="hero-beam"></span>
+        </div>
+      </div>
+      <h2 class="mt-7 font-display text-[2.125rem] leading-[1.05] font-extrabold tracking-tight max-w-[16ch]">Turn paper into a clean PDF.</h2>
+      <p class="mt-3 text-[15px] leading-relaxed text-muted max-w-[40ch]">
+        Photograph a page and it’s straightened and brightened for you. Nothing is uploaded: it all happens on your phone, even offline.
+      </p>
+    </section>
+
+    <!-- Capture -->
+    <section aria-label="Add pages" class="grid grid-cols-[1fr_auto] gap-2.5">
       <button id="takePhotoBtn" type="button"
-        class="min-h-[56px] flex items-center justify-center gap-2.5 px-4 py-3.5 rounded-2xl bg-fh-blue hover:bg-fh-bluedark active:scale-[0.98] text-white font-semibold text-sm transition-all">
-        <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        class="min-h-[60px] px-5 rounded-2xl bg-ultra hover:bg-ultradark active:scale-[0.98] text-white font-semibold text-base flex items-center justify-center gap-2.5 transition">
+        <svg class="w-6 h-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
-        <span>Take Photo</span>
+        <span>Scan a page</span>
       </button>
-
       <button id="addPhotosBtn" type="button"
-        class="min-h-[56px] flex items-center justify-center gap-2.5 px-4 py-3.5 bg-fh-surface hover:bg-fh-rule active:scale-[0.98] text-fh-navy font-semibold text-sm transition-all">
-        <svg class="w-5 h-5 shrink-0 text-fh-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        class="min-h-[60px] px-5 rounded-2xl bg-sheet hover:bg-white active:scale-[0.98] text-graphite font-semibold text-[15px] flex items-center justify-center gap-2 transition ring-1 ring-line">
+        <svg class="w-5 h-5 shrink-0 text-ultra" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
-        <span>Add Photos</span>
+        <span>Import</span>
       </button>
     </section>
 
-    <!-- Auto-Scan on Import Toggle -->
-    <section aria-label="Auto scan toggle" class="bg-fh-surface px-4 py-3 flex items-center justify-between gap-3">
-      <div class="min-w-0">
-        <div id="autoScanLabel" class="text-sm font-semibold text-fh-navy flex items-center gap-1.5">
-          <span>Auto-Scan on Import</span>
-          <span class="px-1.5 py-0.5 rounded-md bg-fh-card text-fh-blue text-[10px] font-bold uppercase tracking-wide">Magic</span>
+    <!-- Options: grouped list -->
+    <section aria-label="Options" class="mt-3 rounded-2xl bg-sheet ring-1 ring-line overflow-hidden">
+      <div class="px-4 py-3.5 flex items-center justify-between gap-4">
+        <div class="min-w-0">
+          <p id="autoScanLabel" class="text-[15px] font-semibold">Auto-clean new photos</p>
+          <p id="autoScanDesc" class="text-[13px] leading-snug text-muted mt-0.5">Find the page edges, straighten and brighten automatically.</p>
         </div>
-        <p id="autoScanDesc" class="text-xs text-fh-muted leading-snug mt-0.5">
-          Auto-detect edges, dewarp &amp; apply Magic Color on added photos.
-        </p>
+        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+          <input type="checkbox" id="autoScanToggle" class="sr-only peer" role="switch" aria-labelledby="autoScanLabel" aria-describedby="autoScanDesc" checked />
+          <span class="toggle-track"></span>
+        </label>
       </div>
-      <label class="relative inline-flex items-center cursor-pointer shrink-0 p-1">
-        <input type="checkbox" id="autoScanToggle" class="sr-only peer" role="switch" aria-labelledby="autoScanLabel" aria-describedby="autoScanDesc" checked />
-        <div class="w-12 h-7 bg-fh-rule peer-focus-visible:ring-2 peer-focus-visible:ring-fh-blue rounded-full peer peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[6px] after:left-[6px] after:bg-white after:border-fh-rule after:border after:rounded-full after:h-5 after:w-5 after:shadow-sm after:transition-all peer-checked:bg-fh-blue"></div>
-      </label>
-    </section>
 
-    <!-- Collapsible PDF Settings Drawer -->
-    <section aria-label="PDF settings" class="bg-fh-surface overflow-hidden">
       <button id="settingsToggleBtn" type="button" aria-expanded="false" aria-controls="settingsBody"
-        class="w-full min-h-[52px] px-4 py-3 flex items-center justify-between gap-3 text-left hover:bg-fh-rule transition-colors">
-        <div class="flex items-center gap-2.5 min-w-0">
-          <div class="w-8 h-8 rounded-xl bg-fh-surface text-fh-navy flex items-center justify-center shrink-0" aria-hidden="true">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-            </svg>
-          </div>
-          <div class="min-w-0">
-            <div class="text-sm font-semibold text-fh-navy">PDF Settings</div>
-            <div id="settingsSummary" class="text-xs text-fh-muted truncate">A4 • Auto • Small margin • Balanced</div>
-          </div>
+        class="w-full min-h-[56px] px-4 py-3 flex items-center justify-between gap-3 text-left border-t border-line hover:bg-paper/60 transition-colors">
+        <div class="min-w-0">
+          <p class="text-[15px] font-semibold">PDF settings</p>
+          <p id="settingsSummary" class="text-[13px] text-muted truncate">A4, auto orientation, 10 mm margins, balanced quality</p>
         </div>
-        <svg id="settingsChevron" class="w-5 h-5 text-fh-muted shrink-0 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <svg id="settingsChevron" class="w-5 h-5 text-muted shrink-0 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
-      <div id="settingsBody" class="hidden border-t-4 border-fh-white px-4 py-4 space-y-4 bg-fh-surface">
+      <div id="settingsBody" class="hidden px-4 pb-4 pt-1 space-y-3.5">
         <div>
-          <label for="filenameInput" class="block text-xs font-semibold uppercase tracking-wider text-fh-muted mb-1.5">Output Filename</label>
+          <label for="filenameInput" class="field-label">File name</label>
           <div class="relative flex items-center">
-            <input type="text" id="filenameInput" autocomplete="off"
-              class="w-full min-h-[44px] pl-3.5 pr-12 py-2.5 rounded-xl bg-white border border-fh-rule text-base sm:text-sm font-medium text-fh-navy focus:outline-none focus:ring-2 focus:ring-fh-blue focus:border-fh-blue"
-              placeholder="scan_2026-01-01" />
-            <span class="absolute right-3.5 text-xs font-semibold text-fh-muted pointer-events-none" aria-hidden="true">.pdf</span>
+            <input type="text" id="filenameInput" autocomplete="off" class="field pr-12" placeholder="scan_2026-01-01" />
+            <span class="absolute right-3.5 text-sm font-medium text-muted pointer-events-none" aria-hidden="true">.pdf</span>
           </div>
         </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label for="pageSizeSelect" class="block text-xs font-semibold uppercase tracking-wider text-fh-muted mb-1.5">Page Size</label>
-            <select id="pageSizeSelect" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-fh-rule text-base sm:text-sm font-medium text-fh-navy focus:outline-none focus:ring-2 focus:ring-fh-blue">
-              <option value="a4" selected>A4 (210 × 297 mm)</option>
-              <option value="letter">US Letter (8.5 × 11 in)</option>
-              <option value="fit">Fit to Image</option>
+            <label for="pageSizeSelect" class="field-label">Page size</label>
+            <select id="pageSizeSelect" class="field">
+              <option value="a4" selected>A4</option>
+              <option value="letter">US Letter</option>
+              <option value="fit">Fit to photo</option>
             </select>
           </div>
           <div>
-            <label for="orientationSelect" class="block text-xs font-semibold uppercase tracking-wider text-fh-muted mb-1.5">Orientation</label>
-            <select id="orientationSelect" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-fh-rule text-base sm:text-sm font-medium text-fh-navy focus:outline-none focus:ring-2 focus:ring-fh-blue disabled:opacity-50 disabled:bg-fh-surface">
-              <option value="auto" selected>Auto (Per Page)</option>
+            <label for="orientationSelect" class="field-label">Orientation</label>
+            <select id="orientationSelect" class="field disabled:opacity-50">
+              <option value="auto" selected>Auto</option>
               <option value="portrait">Portrait</option>
               <option value="landscape">Landscape</option>
             </select>
           </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label for="marginSelect" class="block text-xs font-semibold uppercase tracking-wider text-fh-muted mb-1.5">Margins</label>
-            <select id="marginSelect" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-fh-rule text-base sm:text-sm font-medium text-fh-navy focus:outline-none focus:ring-2 focus:ring-fh-blue">
-              <option value="0">None (0 mm)</option>
-              <option value="10" selected>Small (10 mm)</option>
-              <option value="20">Normal (20 mm)</option>
+            <label for="marginSelect" class="field-label">Margins</label>
+            <select id="marginSelect" class="field">
+              <option value="0">None</option>
+              <option value="10" selected>10 mm</option>
+              <option value="20">20 mm</option>
             </select>
           </div>
           <div>
-            <label for="qualitySelect" class="block text-xs font-semibold uppercase tracking-wider text-fh-muted mb-1.5">Quality / Size</label>
-            <select id="qualitySelect" class="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-white border border-fh-rule text-base sm:text-sm font-medium text-fh-navy focus:outline-none focus:ring-2 focus:ring-fh-blue">
-              <option value="high">High (Sharp Text)</option>
-              <option value="balanced" selected>Balanced (Default)</option>
-              <option value="small">Small File (Compact)</option>
+            <label for="qualitySelect" class="field-label">Quality</label>
+            <select id="qualitySelect" class="field">
+              <option value="high">High</option>
+              <option value="balanced" selected>Balanced</option>
+              <option value="small">Smallest file</option>
             </select>
           </div>
         </div>
-        <p class="text-[11px] text-fh-muted leading-snug">Crisp B&amp;W pages are always kept as lossless PNG for the sharpest text.</p>
+        <p class="text-[13px] text-muted leading-snug">Black &amp; white pages are always kept lossless, so text stays sharp.</p>
       </div>
     </section>
 
-    <!-- Scanned Pages Queue -->
-    <section aria-label="Scanned pages" class="space-y-3">
-      <div id="emptyState" class="bg-fh-surface px-6 py-11 text-center space-y-3 transition-colors">
-        <div class="w-14 h-14 mx-auto rounded-2xl bg-fh-card text-fh-blue flex items-center justify-center" aria-hidden="true">
-          <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </div>
-        <div class="space-y-1">
-          <h2 class="font-display text-2xl font-extrabold uppercase text-fh-navy">Ready to scan.</h2>
-          <p class="text-sm text-fh-muted max-w-xs mx-auto leading-relaxed">
-            Tap <span class="font-medium text-fh-navy">Take Photo</span> to scan a document with edge detection &amp; Magic Color, or <span class="font-medium text-fh-navy">Add Photos</span> from your gallery.
-          </p>
-          <p class="text-xs font-semibold text-fh-blue pt-1">
-            100% Private — all scanning &amp; PDF creation runs on your device, even offline.
-          </p>
-        </div>
+    <!-- Pages -->
+    <section aria-label="Your pages" class="mt-8">
+      <div id="queueHeader" class="hidden mb-3 flex items-baseline justify-between gap-3">
+        <h2 class="font-display text-xl font-extrabold tracking-tight">Your pages <span id="queueCountLabel" class="text-muted font-bold">0</span></h2>
+        <button id="clearAllBtn" type="button" class="hidden min-h-[40px] px-2 text-sm font-semibold text-danger hover:underline underline-offset-4">Clear all</button>
       </div>
-
-      <div id="queueHeader" class="hidden flex items-center justify-between px-1">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-fh-muted">
-          Scanned Pages (<span id="queueCountLabel">0</span>)
-        </h2>
-        <span class="text-xs text-fh-muted">Drag ⠿ to reorder</span>
-      </div>
-
-      <div id="pageList" class="space-y-3"></div>
+      <p id="reorderHint" class="hidden -mt-1 mb-3 text-[13px] text-muted">Tap a page to crop or clean it up. Press and hold to drag it into a new order.</p>
+      <div id="pageList" class="grid grid-cols-2 gap-x-3 gap-y-5"></div>
     </section>
+
+    <!-- Credit -->
+    <footer class="mt-14 flex items-center gap-2.5 text-[13px] text-muted">
+      <svg class="w-6 h-6 shrink-0" viewBox="0 0 40 40" aria-hidden="true">
+        <rect width="40" height="40" rx="12" fill="#1E2230" />
+        <rect x="11" y="8" width="18" height="24" rx="2.5" fill="#fff" />
+        <rect x="9" y="21.5" width="22" height="4" rx="1" fill="#FFE14D" />
+      </svg>
+      <p>Made by <span class="font-display font-extrabold text-graphite">BigPharmi</span>. Your scans never leave this device.</p>
+    </footer>
   </main>
 
-  <!-- ==================== STICKY BOTTOM ACTION BAR ==================== -->
-  <footer class="fixed bottom-0 inset-x-0 z-30 bg-fh-white pb-safe">
-    <div class="max-w-xl mx-auto px-4 pt-3 flex items-center gap-3">
+  <!-- ==================== FLOATING CREATE BUTTON ==================== -->
+  <div class="fixed bottom-0 inset-x-0 z-30 pointer-events-none pb-safe">
+    <div class="max-w-xl mx-auto px-5 pt-6 bg-gradient-to-t from-paper from-55% via-paper/95 to-transparent">
       <button id="createPdfBtn" type="button" disabled
-        class="w-full min-h-[52px] px-5 py-3 rounded-2xl bg-fh-blue hover:bg-fh-bluedark active:scale-[0.98] disabled:bg-fh-rule disabled:text-fh-muted disabled:active:scale-100 disabled:cursor-not-allowed text-white font-semibold text-sm disabled:shadow-none flex items-center justify-center gap-2 transition-all">
+        class="pointer-events-auto w-full min-h-[58px] px-5 rounded-full bg-graphite hover:bg-black active:scale-[0.98] disabled:bg-line disabled:text-muted disabled:active:scale-100 disabled:cursor-not-allowed text-white font-semibold text-base flex items-center justify-center gap-2.5 transition shadow-float disabled:shadow-none">
         <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        <span id="createPdfLabel">Create PDF (0 pages)</span>
+        <span id="createPdfLabel">Create PDF</span>
       </button>
     </div>
-  </footer>
+  </div>
 
-  <!-- ==================== FULL-SCREEN CROP & FILTER STUDIO ==================== -->
-  <div id="studioModal" role="dialog" aria-modal="true" aria-label="Document crop and filter studio"
-    class="hidden fixed inset-0 z-50 bg-fh-navy text-white flex flex-col">
-    <div class="pt-safe px-3 pb-2.5 bg-fh-navydeep flex items-center justify-between gap-2 shrink-0">
+  <!-- ==================== EDITOR (crop + clean up) ==================== -->
+  <div id="studioModal" role="dialog" aria-modal="true" aria-label="Edit page"
+    class="hidden fixed inset-0 z-50 bg-studio text-white flex flex-col">
+    <div class="pt-safe px-3 pb-3 flex items-center justify-between gap-2 shrink-0">
       <button id="studioCloseBtn" type="button" aria-label="Cancel editing"
-        class="min-h-[44px] px-3 rounded-xl text-fh-mist hover:text-white hover:bg-fh-navyraised text-sm font-medium flex items-center gap-1 transition-colors">
+        class="min-h-[44px] min-w-[44px] px-3 rounded-full text-white/75 hover:text-white hover:bg-studio2 text-sm font-semibold flex items-center justify-center gap-1 transition-colors">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
         <span class="hidden sm:inline">Cancel</span>
       </button>
 
-      <div class="bg-fh-navyraised p-1 rounded-xl flex items-center gap-1" role="tablist" aria-label="Editing step">
-        <button id="tabCropBtn" type="button" role="tab" aria-selected="true" class="min-h-[36px] px-3.5 rounded-lg text-xs font-semibold transition-all bg-fh-blue text-white shadow-sm">1. Crop</button>
-        <button id="tabFilterBtn" type="button" role="tab" aria-selected="false" class="min-h-[36px] px-3.5 rounded-lg text-xs font-semibold transition-all text-fh-mist hover:text-white">2. Magic Filters</button>
+      <div class="bg-studio2 p-1 rounded-full flex items-center" role="tablist" aria-label="Editing step">
+        <button id="tabCropBtn" type="button" role="tab" aria-selected="true" class="seg-tab">Crop</button>
+        <button id="tabFilterBtn" type="button" role="tab" aria-selected="false" class="seg-tab">Clean up</button>
       </div>
 
       <button id="studioPrimaryBtn" type="button"
-        class="min-h-[44px] px-4 rounded-xl bg-fh-blue hover:bg-fh-bluedark active:scale-95 text-white text-sm font-semibold transition-all">
+        class="min-h-[44px] px-5 rounded-full bg-ultra hover:bg-ultradark active:scale-95 text-white text-sm font-semibold transition">
         Next
       </button>
     </div>
 
-    <!-- STEP 1: PERSPECTIVE CROP -->
+    <!-- Crop -->
     <div id="studioCropPane" class="flex-1 flex flex-col min-h-0 relative">
-      <div id="cropStage" class="flex-1 relative min-h-0 w-full flex items-center justify-center p-3 overflow-hidden">
-        <canvas id="cropCanvas" class="block rounded-lg shadow-2xl" aria-label="Drag the corner or edge handles to fit the document"></canvas>
+      <div id="cropStage" class="flex-1 relative min-h-0 w-full flex items-center justify-center p-4 overflow-hidden">
+        <canvas id="cropCanvas" class="block rounded-md" aria-label="Drag the corner or edge handles to fit the page"></canvas>
 
         <div id="cropLoading" class="hidden absolute inset-0 flex items-center justify-center">
-          <div class="px-4 py-2.5 rounded-2xl bg-fh-navy text-xs font-semibold flex items-center gap-2">
-            <svg class="w-4 h-4 animate-spin text-fh-sky" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-            </svg>
-            <span>Opening page...</span>
-          </div>
+          <div class="busy-chip"><span class="busy-dot"></span><span>Opening page</span></div>
         </div>
 
         <div id="loupeContainer" aria-hidden="true"
-          class="hidden fixed z-50 pointer-events-none w-[116px] h-[116px] rounded-full border-[3px] border-fh-blue overflow-hidden bg-fh-navy">
+          class="hidden fixed z-50 pointer-events-none w-[116px] h-[116px] rounded-full ring-4 ring-hilite overflow-hidden bg-studio">
           <canvas id="loupeCanvas" width="116" height="116" class="w-full h-full block"></canvas>
         </div>
       </div>
 
-      <div class="bg-fh-navydeep px-4 pt-3 pb-safe shrink-0">
+      <div class="px-4 pt-2 pb-safe shrink-0">
+        <p class="text-center text-[13px] text-white/60 mb-3">Drag the yellow handles to the page edges.</p>
         <div class="max-w-md mx-auto grid grid-cols-4 gap-2">
           <button id="cropAutoBtn" type="button" class="studio-tool">
-            <svg class="w-4 h-4 text-fh-sky" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
             </svg>
-            <span>Auto-Detect</span>
+            <span>Auto-find</span>
           </button>
           <button id="cropFullBtn" type="button" class="studio-tool">
-            <svg class="w-4 h-4 text-fh-mist" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
             </svg>
-            <span>Full Page</span>
+            <span>Whole photo</span>
           </button>
           <button id="cropRotateBtn" type="button" class="studio-tool">
-            <svg class="w-4 h-4 text-fh-mist" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            <span>Rotate 90°</span>
+            <span>Rotate</span>
           </button>
-          <button id="cropAspectBtn" type="button" class="studio-tool" aria-label="Page shape: Auto. Tap to change">
-            <svg class="w-4 h-4 text-fh-mist" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <button id="cropAspectBtn" type="button" class="studio-tool" aria-label="Page shape: as photographed. Tap to change">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
               <rect x="6" y="3" width="12" height="18" rx="1.5" stroke-linejoin="round" />
-              <path stroke-linecap="round" d="M9 8h6M9 12h6" />
             </svg>
-            <span id="cropAspectLabel">Shape: Auto</span>
+            <span id="cropAspectLabel">Shape: auto</span>
           </button>
         </div>
       </div>
     </div>
 
-    <!-- STEP 2: MAGIC FILTERS -->
+    <!-- Clean up -->
     <div id="studioFilterPane" class="hidden flex-1 flex flex-col min-h-0">
-      <div class="flex-1 min-h-0 w-full flex items-center justify-center p-4 overflow-hidden relative">
-        <canvas id="filterPreviewCanvas" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl bg-white" aria-label="Filtered page preview"></canvas>
-        <div id="filterLoadingBadge" class="hidden absolute inset-0 bg-fh-navy/70 flex items-center justify-center">
-          <div class="px-4 py-2.5 rounded-2xl bg-fh-navy text-xs font-semibold flex items-center gap-2">
-            <svg class="w-4 h-4 animate-spin text-fh-sky" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-            </svg>
-            <span>Dewarping document...</span>
-          </div>
+      <div class="flex-1 min-h-0 w-full flex items-center justify-center p-5 overflow-hidden relative">
+        <canvas id="filterPreviewCanvas" class="max-w-full max-h-full object-contain rounded-[3px] bg-white shadow-sheet" aria-label="Cleaned-up page preview"></canvas>
+        <div id="filterLoadingBadge" class="hidden absolute inset-0 bg-studio/60 flex items-center justify-center">
+          <div class="busy-chip"><span class="busy-dot"></span><span>Straightening page</span></div>
         </div>
       </div>
 
-      <div class="bg-fh-navydeep px-4 pt-3 pb-safe space-y-3.5 shrink-0">
-        <div class="max-w-md mx-auto space-y-3.5">
-          <div id="filterPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5" role="group" aria-label="Filter presets">
+      <div class="px-4 pt-1 pb-safe space-y-4 shrink-0">
+        <div class="max-w-md mx-auto space-y-4">
+          <div id="filterPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-1 px-1 pb-0.5" role="group" aria-label="Look">
+            <button type="button" data-filter="magic" aria-pressed="false" class="filter-pill">Bright</button>
+            <button type="button" data-filter="bw" aria-pressed="false" class="filter-pill">Black &amp; white</button>
+            <button type="button" data-filter="grayscale" aria-pressed="false" class="filter-pill">Grey</button>
+            <button type="button" data-filter="lighten" aria-pressed="false" class="filter-pill">Lighter</button>
             <button type="button" data-filter="original" aria-pressed="false" class="filter-pill">Original</button>
-            <button type="button" data-filter="magic" aria-pressed="false" class="filter-pill">Magic Color</button>
-            <button type="button" data-filter="bw" aria-pressed="false" class="filter-pill">Crisp B&amp;W</button>
-            <button type="button" data-filter="grayscale" aria-pressed="false" class="filter-pill">Grayscale</button>
-            <button type="button" data-filter="lighten" aria-pressed="false" class="filter-pill">Lighten</button>
           </div>
 
-          <div class="grid grid-cols-2 gap-4 pt-1">
-            <div class="space-y-1">
-              <div class="flex items-center justify-between text-[11px] font-medium text-fh-mist">
+          <div class="grid grid-cols-2 gap-5">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-[13px] font-medium text-white/70">
                 <label for="brightnessSlider">Brightness</label>
-                <span id="brightnessVal" class="text-fh-sky font-semibold">0</span>
+                <span id="brightnessVal" class="tabular-nums text-white">0</span>
               </div>
               <input id="brightnessSlider" type="range" min="-50" max="50" value="0" class="scanner-slider w-full" />
             </div>
-            <div class="space-y-1">
-              <div class="flex items-center justify-between text-[11px] font-medium text-fh-mist">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-[13px] font-medium text-white/70">
                 <label for="contrastSlider">Contrast</label>
-                <span id="contrastVal" class="text-fh-sky font-semibold">0</span>
+                <span id="contrastVal" class="tabular-nums text-white">0</span>
               </div>
               <input id="contrastSlider" type="range" min="-50" max="50" value="0" class="scanner-slider w-full" />
             </div>
           </div>
 
           <button id="saveNextBtn" type="button"
-            class="hidden w-full min-h-[46px] px-4 py-2.5 rounded-xl bg-fh-navyraised hover:bg-fh-blue active:scale-[0.98] text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all">
-            <svg class="w-4 h-4 text-fh-sky" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            class="hidden w-full min-h-[50px] px-4 rounded-full bg-studio2 hover:bg-studio3 active:scale-[0.98] text-white text-[15px] font-semibold flex items-center justify-center gap-2 transition">
+            <svg class="w-5 h-5 text-hilite" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            <span>Save &amp; Scan Next Page</span>
+            <span>Save and scan next page</span>
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ==================== PDF READY / SHARE MODAL ==================== -->
+  <!-- ==================== PDF READY (bottom sheet) ==================== -->
   <div id="pdfReadyModal" role="dialog" aria-modal="true" aria-labelledby="pdfReadyTitle"
-    class="hidden fixed inset-0 z-50 bg-fh-navy/70 flex items-center justify-center p-4">
-    <div class="w-full max-w-sm bg-fh-white p-6 space-y-5">
-      <div class="flex items-center gap-3.5">
-        <div class="w-12 h-12 rounded-2xl bg-fh-blue text-white flex items-center justify-center shrink-0" aria-hidden="true">
-          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+    class="hidden fixed inset-0 z-50 bg-graphite/40 flex items-end sm:items-center justify-center sm:p-4">
+    <div class="sheet-panel space-y-5">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-[72px] shrink-0 rounded-[3px] bg-white shadow-sheet relative overflow-hidden" aria-hidden="true">
+          <span class="absolute left-2 right-3 top-3 h-1 rounded-full bg-line"></span>
+          <span class="absolute left-2 right-2 top-6 h-1 rounded-full bg-line"></span>
+          <span class="absolute left-1 right-1 top-9 h-2 bg-hilite"></span>
+          <span class="absolute left-2 right-5 top-[46px] h-1 rounded-full bg-line"></span>
         </div>
         <div class="min-w-0">
-          <h3 id="pdfReadyTitle" class="font-display text-xl font-extrabold uppercase text-fh-navy">PDF ready.</h3>
-          <p id="pdfReadyMeta" class="text-xs text-fh-muted truncate">scan.pdf • 1.2 MB</p>
+          <h3 id="pdfReadyTitle" class="font-display text-2xl font-extrabold tracking-tight">Your PDF is ready</h3>
+          <p id="pdfReadyMeta" class="text-sm text-muted truncate">scan.pdf, 1.2 MB</p>
         </div>
       </div>
       <div class="space-y-2.5">
-        <button id="pdfShareBtn" type="button"
-          class="hidden w-full min-h-[48px] px-4 py-3 rounded-xl bg-fh-blue hover:bg-fh-bluedark text-white font-semibold text-sm flex items-center justify-center gap-2 transition-colors">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+        <button id="pdfShareBtn" type="button" class="hidden btn-primary w-full">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 12v7a2 2 0 002 2h12a2 2 0 002-2v-7M16 6l-4-4m0 0L8 6m4-4v13" />
           </svg>
-          <span>Share / Save to Files</span>
+          <span>Share or save to Files</span>
         </button>
-        <button id="pdfDownloadAgainBtn" type="button"
-          class="w-full min-h-[48px] px-4 py-3 rounded-xl bg-fh-surface hover:bg-fh-rule text-fh-navy font-semibold text-sm flex items-center justify-center gap-2 transition-colors">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <button id="pdfDownloadAgainBtn" type="button" class="btn-secondary w-full">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
           <span>Download PDF</span>
         </button>
-        <button id="pdfReadyCloseBtn" type="button"
-          class="w-full min-h-[44px] px-4 py-2 rounded-xl text-fh-muted hover:text-fh-navy font-semibold text-xs transition-colors">
-          Done
-        </button>
+        <button id="pdfReadyCloseBtn" type="button" class="w-full min-h-[44px] text-sm font-semibold text-muted hover:text-graphite">Done</button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== PROGRESS MODAL ==================== -->
+  <!-- ==================== PROGRESS ==================== -->
   <div id="progressModal" role="dialog" aria-modal="true" aria-labelledby="progressTitle"
-    class="hidden fixed inset-0 z-[60] bg-fh-navy/70 flex items-center justify-center p-4">
-    <div class="w-full max-w-sm bg-fh-white p-6 space-y-4">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-fh-card text-fh-blue flex items-center justify-center shrink-0" aria-hidden="true">
-          <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-        </div>
-        <div class="min-w-0">
-          <h3 id="progressTitle" class="font-display text-lg font-extrabold text-fh-navy">Processing</h3>
-          <p id="progressStatus" aria-live="polite" class="text-xs text-fh-muted truncate">Please wait...</p>
-        </div>
+    class="hidden fixed inset-0 z-[60] bg-graphite/40 flex items-end sm:items-center justify-center sm:p-4">
+    <div class="sheet-panel space-y-4">
+      <div>
+        <h3 id="progressTitle" class="font-display text-xl font-extrabold tracking-tight">Working</h3>
+        <p id="progressStatus" aria-live="polite" class="text-sm text-muted truncate mt-0.5">One moment</p>
       </div>
-      <div class="w-full h-2.5 bg-fh-surface rounded-full overflow-hidden" role="progressbar" aria-labelledby="progressTitle" aria-valuemin="0" aria-valuemax="100">
-        <div id="progressBar" class="h-full bg-fh-blue rounded-full transition-all duration-200" style="width: 0%"></div>
+      <div class="w-full h-2 bg-paper rounded-full overflow-hidden" role="progressbar" aria-labelledby="progressTitle" aria-valuemin="0" aria-valuemax="100">
+        <div id="progressBar" class="h-full bg-ultra rounded-full transition-all duration-200" style="width: 0%"></div>
       </div>
     </div>
   </div>
 
-  <!-- ==================== CONFIRM CLEAR MODAL ==================== -->
+  <!-- ==================== CONFIRM CLEAR ==================== -->
   <div id="confirmClearModal" role="alertdialog" aria-modal="true" aria-labelledby="confirmClearTitle" aria-describedby="confirmClearDesc"
-    class="hidden fixed inset-0 z-50 bg-fh-navy/70 flex items-center justify-center p-4">
-    <div class="w-full max-w-sm bg-fh-white p-6 space-y-5">
+    class="hidden fixed inset-0 z-50 bg-graphite/40 flex items-end sm:items-center justify-center sm:p-4">
+    <div class="sheet-panel space-y-5">
       <div class="space-y-1.5">
-        <h3 id="confirmClearTitle" class="font-display text-lg font-extrabold text-fh-navy">Clear all scanned pages?</h3>
-        <p id="confirmClearDesc" class="text-sm text-fh-muted">This removes all pages from your current session. Your original phone photos are untouched.</p>
+        <h3 id="confirmClearTitle" class="font-display text-xl font-extrabold tracking-tight">Remove all pages?</h3>
+        <p id="confirmClearDesc" class="text-sm text-muted leading-relaxed">This clears every page from PocketPDF. The photos in your gallery are not touched.</p>
       </div>
-      <div class="grid grid-cols-2 gap-3">
-        <button id="cancelClearBtn" type="button" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-fh-surface hover:bg-fh-rule text-fh-navy font-semibold text-sm">Cancel</button>
-        <button id="confirmClearBtn" type="button" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-fh-coral hover:bg-fh-coralbright text-fh-navy font-semibold text-sm">Clear All</button>
+      <div class="grid grid-cols-2 gap-2.5">
+        <button id="cancelClearBtn" type="button" class="btn-secondary">Keep pages</button>
+        <button id="confirmClearBtn" type="button" class="min-h-[52px] rounded-2xl bg-danger hover:bg-red-700 text-white font-semibold">Remove all</button>
       </div>
     </div>
   </div>
 
-  <div id="toastContainer" aria-live="polite" class="fixed top-16 inset-x-4 z-[70] max-w-md mx-auto pointer-events-none flex flex-col gap-2"></div>
+  <div id="toastContainer" aria-live="polite" class="fixed top-4 inset-x-4 z-[70] max-w-md mx-auto pointer-events-none flex flex-col gap-2 pt-safe-header"></div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-# PocketPDF Scanner
+# PocketPDF Scanner by BigPharmi
 
 A private document scanner that runs in the browser. Photos never leave the device: cropping, clean-up and PDF creation all happen on the phone, and the app works offline once it has loaded.
 
@@ -27,7 +27,7 @@ js/worker.js           Background worker that runs imaging.js off the main threa
 sw.js                  Service worker (offline support)
 manifest.webmanifest   Install-to-home-screen metadata
 icons/                 App icons
-fonts/                 Archivo + IBM Plex Sans (self-hosted, SIL OFL)
+fonts/                 Bricolage Grotesque + Figtree (self-hosted, SIL OFL)
 vendor/                Self-hosted libraries: jsPDF, OpenCV.js, heic2any, SortableJS
 ```
 
@@ -44,5 +44,4 @@ Then open http://localhost:8000. The service worker also runs on localhost. Open
 ## Notes
 - Auto-crop (OpenCV, ~10 MB) starts loading as soon as the app opens and is cached for offline use after the first visit. With Data Saver on, it waits until the first scan.
 - Pages are saved in the browser's IndexedDB, so they survive a reload or the phone closing the tab. "Clear All" erases them.
-- Libraries: jsPDF (MIT), OpenCV.js (Apache 2.0), heic2any (MIT), SortableJS (MIT). Fonts: Archivo and IBM Plex Sans (SIL Open Font License).
-- Visual style follows the "Fahmi Hassan" design system: navy/white, square solid blocks, Archivo headlines, coral for warnings only, blue for the main actions.
+- Libraries: jsPDF (MIT), OpenCV.js (Apache 2.0), heic2any (MIT), SortableJS (MIT). Fonts: Bricolage Grotesque and Figtree (SIL Open Font License).

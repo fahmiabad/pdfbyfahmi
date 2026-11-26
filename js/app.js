@@ -26,10 +26,10 @@
 
   const FILTER_LABELS = {
     original: 'Original',
-    magic: 'Magic Color',
-    bw: 'Crisp B&W',
-    grayscale: 'Grayscale',
-    lighten: 'Lighten',
+    magic: 'Bright',
+    bw: 'Black & white',
+    grayscale: 'Grey',
+    lighten: 'Lighter',
   };
 
   const QUALITY_PRESETS = {
@@ -45,7 +45,7 @@
   };
 
   const ASPECTS = {
-    auto: { label: 'Auto', ratio: 0 },
+    auto: { label: 'auto', ratio: 0 },
     a4: { label: 'A4', ratio: 297 / 210 },
     letter: { label: 'Letter', ratio: 11 / 8.5 },
   };
@@ -212,15 +212,21 @@
   // ==================== TOASTS (with optional action) ====================
   function showToast(message, type = 'info', duration = 3200, action = null) {
     const colors = {
-      info: 'bg-fh-navy text-white',
-      success: 'bg-fh-blue text-white',
-      warning: 'bg-fh-coral text-fh-navy',
-      error: 'bg-fh-coral text-fh-navy',
+      info: 'bg-graphite text-white',
+      success: 'bg-graphite text-white',
+      warning: 'bg-graphite text-white',
+      error: 'bg-danger text-white',
     };
+    const marks = { success: 'bg-hilite', warning: 'bg-hilite', info: 'bg-white/40', error: 'bg-white' };
     const toast = document.createElement('div');
     toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
-    toast.className = `pointer-events-auto px-4 py-3 text-xs sm:text-sm font-semibold transition-all duration-200 opacity-0 -translate-y-2 flex items-center justify-between gap-3 ${colors[type] || colors.info}`;
+    toast.className = `pointer-events-auto pl-4 pr-2 py-2 min-h-[48px] rounded-2xl text-sm font-medium transition-all duration-200 opacity-0 -translate-y-2 flex items-center justify-between gap-3 ${colors[type] || colors.info}`;
+    toast.style.boxShadow = '0 12px 28px -10px rgba(30,34,48,0.5)';
+    const mark = document.createElement('span');
+    mark.className = `w-2 h-2 rounded-full shrink-0 ${marks[type] || marks.info}`;
+    toast.appendChild(mark);
     const text = document.createElement('span');
+    text.className = 'flex-1 py-1';
     text.textContent = message;
     toast.appendChild(text);
 
@@ -236,7 +242,7 @@
     if (action) {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'shrink-0 min-h-[36px] px-3 bg-white/15 hover:bg-white/25 font-bold text-xs uppercase tracking-widest';
+      btn.className = 'shrink-0 min-h-[36px] px-4 rounded-xl bg-hilite text-graphite font-bold text-sm';
       btn.textContent = action.label;
       btn.addEventListener('click', () => {
         const onExpire = action.onExpire;
@@ -272,7 +278,7 @@
     modal.classList.remove('hidden');
     requestAnimationFrame(() => {
       const target = focusTarget || modal.querySelector('button:not([disabled]):not(.hidden)');
-      if (target) target.focus({ preventScroll: true });
+      if (target) target.focus({ preventScroll: true, focusVisible: false });
     });
   }
   function closeModal(modal) {
@@ -325,16 +331,16 @@
 
   // ==================== OPENCV (LAZY) ====================
   function setEngineStatus(mode) {
-    const base = 'inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 text-[11px] font-semibold ';
+    const base = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ';
     const modes = {
-      idle: ['bg-fh-navyraised text-fh-mist', 'bg-fh-mist', 'Auto-Crop starts on first scan'],
-      loading: ['bg-fh-navyraised text-fh-sky', 'bg-fh-sky animate-pulse', 'Loading Auto-Crop…'],
-      ready: ['bg-fh-blue text-white', 'bg-fh-sky', 'Auto-Crop Ready'],
-      manual: ['bg-fh-navyraised text-fh-mist', 'bg-fh-mist', 'Manual Crop Mode'],
+      idle: ['bg-sheet text-muted', 'bg-line', 'Auto-crop starts on first scan'],
+      loading: ['bg-sheet text-muted', 'bg-ultra animate-pulse', 'Starting auto-crop'],
+      ready: ['bg-hilite text-graphite', 'bg-graphite', 'Auto-crop ready'],
+      manual: ['bg-sheet text-muted', 'bg-line', 'Manual crop'],
     };
     const [pill, dot, text] = modes[mode] || modes.idle;
     el.engineStatusPill.className = base + pill;
-    el.engineStatusDot.className = 'w-1.5 h-1.5 ' + dot;
+    el.engineStatusDot.className = 'w-2 h-2 rounded-full ' + dot;
     el.engineStatusText.textContent = text;
     state.cvReady = mode === 'ready';
   }
@@ -735,7 +741,7 @@
         if (!warned) {
           warned = true;
           console.warn('Storage unavailable — pages will not survive a reload.', err);
-          showToast('Storage unavailable: pages won’t be kept after closing.', 'warning', 4500);
+          showToast('This browser can’t store pages, so they’ll be lost if you close the app.', 'warning', 4500);
         }
       });
     }
@@ -861,12 +867,12 @@
     const added = [];
     let failed = 0;
 
-    showProgress('Importing Document', `Preparing 1 of ${files.length}...`, 6);
+    showProgress('Adding pages', `Page 1 of ${files.length}`, 6);
     await nextFrame();
 
     try {
       if (wantDetect && !state.cvReady) {
-        showProgress('Loading Auto-Crop', 'First scan only — the engine is cached afterwards...', 8);
+        showProgress('Starting auto-crop', 'This only takes a moment the first time.', 8);
         await Promise.race([ensureOpenCV(), sleep(OPENCV_IMPORT_WAIT)]);
       }
 
@@ -874,8 +880,8 @@
         const file = files[i];
         const heic = isHeicFile(file);
         showProgress(
-          heic ? 'Converting HEIC' : wantDetect && state.cvReady ? 'Auto-Scanning' : 'Importing Photo',
-          `Processing ${i + 1} of ${files.length}: ${file.name || 'Camera Photo'}`,
+          heic ? 'Converting photo' : wantDetect && state.cvReady ? 'Cleaning up' : 'Adding photo',
+          `Page ${i + 1} of ${files.length}`,
           Math.round(((i + 0.4) / files.length) * 90)
         );
         await nextFrame();
@@ -956,7 +962,7 @@
       const note = failed > 0 ? ` (${failed} skipped)` : '';
       showToast(`Added ${added.length} ${added.length === 1 ? 'page' : 'pages'}${note}`, 'success', 2600);
     } else if (failed > 0) {
-      showToast('Could not read the selected photo(s).', 'error', 3500);
+      showToast('Those files couldn’t be opened. Try JPG, PNG or HEIC photos.', 'error', 3500);
     }
   }
 
@@ -1010,7 +1016,7 @@
       requestAnimationFrame(resizeAndDrawCropCanvas);
     } catch (err) {
       console.error('Could not open page:', err);
-      showToast('Could not open this page.', 'error', 3000);
+      showToast('This page couldn’t be opened. Try scanning it again.', 'error', 3000);
       closeStudio();
     } finally {
       studio.opening = false;
@@ -1039,13 +1045,9 @@
     const isCrop = step === 'crop';
     el.studioCropPane.classList.toggle('hidden', !isCrop);
     el.studioFilterPane.classList.toggle('hidden', isCrop);
-    const on = 'min-h-[36px] px-3.5 text-xs font-semibold transition-all bg-fh-blue text-white';
-    const off = 'min-h-[36px] px-3.5 text-xs font-semibold transition-all text-fh-mist hover:text-white';
-    el.tabCropBtn.className = isCrop ? on : off;
-    el.tabFilterBtn.className = isCrop ? off : on;
     el.tabCropBtn.setAttribute('aria-selected', String(isCrop));
     el.tabFilterBtn.setAttribute('aria-selected', String(!isCrop));
-    el.studioPrimaryBtn.textContent = isCrop ? 'Next' : 'Save Page';
+    el.studioPrimaryBtn.textContent = isCrop ? 'Next' : 'Save page';
 
     if (opts.skipDraw) return;
     if (isCrop) requestAnimationFrame(resizeAndDrawCropCanvas);
@@ -1055,7 +1057,7 @@
   function updateAspectUI() {
     const label = ASPECTS[studio.aspect].label;
     el.cropAspectLabel.textContent = `Shape: ${label}`;
-    el.cropAspectBtn.setAttribute('aria-label', `Page shape: ${label}. Tap to change`);
+    el.cropAspectBtn.setAttribute('aria-label', `Page shape: ${studio.aspect === 'auto' ? 'as photographed' : label}. Tap to change`);
   }
 
   function resizeAndDrawCropCanvas() {
@@ -1104,14 +1106,14 @@
     ctx.moveTo(pts[0].x, pts[0].y);
     for (let i = 1; i < 4; i++) ctx.lineTo(pts[i].x, pts[i].y);
     ctx.closePath();
-    ctx.fillStyle = 'rgba(11, 31, 58, 0.64)';
+    ctx.fillStyle = 'rgba(23, 27, 38, 0.66)';
     ctx.fill('evenodd');
 
     ctx.beginPath();
     ctx.moveTo(pts[0].x, pts[0].y);
     for (let i = 1; i < 4; i++) ctx.lineTo(pts[i].x, pts[i].y);
     ctx.closePath();
-    ctx.strokeStyle = '#8FC1FF';
+    ctx.strokeStyle = '#FFE14D';
     ctx.lineWidth = 2.5;
     ctx.stroke();
 
@@ -1129,11 +1131,12 @@
       ctx.beginPath();
       const rw = active ? 30 : 26;
       const rh = active ? 12 : 10;
-      ctx.rect(-rw / 2, -rh / 2, rw, rh);
+      if (ctx.roundRect) ctx.roundRect(-rw / 2, -rh / 2, rw, rh, rh / 2);
+      else ctx.rect(-rw / 2, -rh / 2, rw, rh);
       ctx.fillStyle = '#ffffff';
       ctx.fill();
       ctx.lineWidth = 2;
-      ctx.strokeStyle = active ? '#8FC1FF' : '#1D5FA8';
+      ctx.strokeStyle = active ? '#FFFFFF' : '#FFE14D';
       ctx.stroke();
       ctx.restore();
     });
@@ -1142,17 +1145,15 @@
     pts.forEach((p, idx) => {
       const active = drag && drag.type === 'corner' && drag.index === idx;
       ctx.beginPath();
-      const o = active ? 15 : 12;
-      ctx.rect(p.x - o, p.y - o, o * 2, o * 2);
-      ctx.fillStyle = active ? 'rgba(143, 193, 255, 0.5)' : 'rgba(29, 95, 168, 0.4)';
+      ctx.arc(p.x, p.y, active ? 17 : 14, 0, Math.PI * 2);
+      ctx.fillStyle = active ? 'rgba(255, 225, 77, 0.45)' : 'rgba(255, 225, 77, 0.25)';
       ctx.fill();
       ctx.beginPath();
-      const i = active ? 9 : 7.5;
-      ctx.rect(p.x - i, p.y - i, i * 2, i * 2);
+      ctx.arc(p.x, p.y, active ? 9 : 8, 0, Math.PI * 2);
       ctx.fillStyle = '#ffffff';
       ctx.fill();
       ctx.lineWidth = 2.5;
-      ctx.strokeStyle = active ? '#8FC1FF' : '#1D5FA8';
+      ctx.strokeStyle = active ? '#FFFFFF' : '#FFE14D';
       ctx.stroke();
     });
     ctx.restore();
@@ -1190,11 +1191,11 @@
     if (sx + sw > src.width) { const o = sx + sw - src.width; sw -= o; dw -= o * kx; }
     if (sy + sh > src.height) { const o = sy + sh - src.height; sh -= o; dh -= o * ky; }
 
-    lCtx.fillStyle = '#0B1F3A';
+    lCtx.fillStyle = '#171B26';
     lCtx.fillRect(0, 0, size, size);
     if (sw > 0 && sh > 0 && dw > 0 && dh > 0) lCtx.drawImage(src, sx, sy, sw, sh, dx, dy, dw, dh);
 
-    lCtx.strokeStyle = '#8FC1FF';
+    lCtx.strokeStyle = '#FFE14D';
     lCtx.lineWidth = 2;
     neighbors.forEach((nb) => {
       lCtx.beginPath();
@@ -1210,8 +1211,8 @@
     lCtx.moveTo(half, half - 14); lCtx.lineTo(half, half + 14);
     lCtx.stroke();
     lCtx.beginPath();
-    lCtx.rect(half - 3, half - 3, 6, 6);
-    lCtx.fillStyle = '#8FC1FF';
+    lCtx.arc(half, half, 3, 0, Math.PI * 2);
+    lCtx.fillStyle = '#FFE14D';
     lCtx.fill();
   }
 
@@ -1362,7 +1363,7 @@
     closeStudio();
 
     return enqueue(async () => {
-      showProgress('Saving Scan', 'Rendering full-resolution page...', 55);
+      showProgress('Saving page', 'Applying your changes', 55);
       await nextFrame();
       try {
         Object.assign(page, edits);
@@ -1372,7 +1373,7 @@
         showToast('Page saved', 'success', 1800);
       } catch (err) {
         console.error('Save page failed:', err);
-        showToast('Could not save page edits.', 'error', 3500);
+        showToast('Changes weren’t saved. Try again.', 'error', 3500);
       } finally {
         releaseCanvas(rotCanvas);
         hideProgress();
@@ -1387,7 +1388,7 @@
     [state.pages[index], state.pages[target]] = [state.pages[target], state.pages[index]];
     renderPageList();
     persistOrder();
-    const btn = el.pageList.children[target] && el.pageList.children[target].querySelector(delta < 0 ? '[data-act="up"]' : '[data-act="down"]');
+    const btn = el.pageList.children[target] && el.pageList.children[target].querySelector(delta < 0 ? '[data-act="left"]' : '[data-act="right"]');
     if (btn && !btn.disabled) btn.focus({ preventScroll: true });
   }
 
@@ -1396,7 +1397,7 @@
       const index = state.pages.findIndex((p) => p.id === pageId);
       const page = state.pages[index];
       if (!page) return;
-      showProgress('Rotating Page', `Updating page ${index + 1}...`, 50);
+      showProgress('Rotating page', `Page ${index + 1}`, 50);
       await nextFrame();
       try {
         page.rotation = (page.rotation + 90) % 360;
@@ -1406,7 +1407,7 @@
         renderPageList();
       } catch (err) {
         console.error('Rotate failed:', err);
-        showToast('Could not rotate page.', 'error', 3000);
+        showToast('The page couldn’t be rotated. Try again.', 'error', 3000);
       } finally {
         hideProgress();
       }
@@ -1427,7 +1428,7 @@
     DB.deletePage(removed.id);
 
     let restored = false;
-    showToast(`Page ${index + 1} deleted`, 'info', 5000, {
+    showToast(`Page ${index + 1} removed`, 'info', 5000, {
       label: 'Undo',
       onClick: () => {
         restored = true;
@@ -1447,15 +1448,14 @@
     state.pages = [];
     DB.clear();
     renderPageList();
-    showToast('All pages cleared', 'info', 2000);
+    showToast('All pages removed', 'info', 2000);
   }
 
   const ICONS = {
     rotate: '<path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />',
-    up: '<path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />',
-    down: '<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />',
+    left: '<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />',
+    right: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />',
     del: '<path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />',
-    sliders: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />',
   };
 
   function renderPageList() {
@@ -1463,96 +1463,72 @@
     el.emptyState.classList.toggle('hidden', count > 0);
     el.queueHeader.classList.toggle('hidden', count === 0);
     el.clearAllBtn.classList.toggle('hidden', count === 0);
+    const hint = document.getElementById('reorderHint');
+    if (hint) hint.classList.toggle('hidden', count === 0);
     el.queueCountLabel.textContent = String(count);
     el.createPdfBtn.disabled = count === 0 || state.pdfInProgress;
-    el.createPdfLabel.textContent = `Create PDF (${count} ${count === 1 ? 'page' : 'pages'})`;
+    el.createPdfLabel.textContent = count === 0 ? 'Create PDF' : `Create PDF from ${count} ${count === 1 ? 'page' : 'pages'}`;
 
     el.pageList.innerHTML = '';
     state.pages.forEach((page, idx) => {
       const card = document.createElement('article');
-      card.className = 'bg-fh-surface p-3 space-y-3';
+      card.className = 'min-w-0';
       card.dataset.id = page.id;
       card.setAttribute('aria-label', `Page ${idx + 1}`);
 
-      const top = document.createElement('div');
-      top.className = 'flex items-center gap-3 min-w-0';
-
-      const handle = document.createElement('div');
-      handle.className = 'drag-handle self-stretch -ml-1 w-7 shrink-0 flex items-center justify-center text-fh-muted hover:text-fh-navy hover:bg-fh-rule';
-      handle.setAttribute('aria-hidden', 'true');
-      handle.title = 'Drag to reorder';
-      handle.innerHTML = '<svg class="w-4 h-6" viewBox="0 0 10 16" fill="currentColor"><circle cx="2.5" cy="2.5" r="1.5"/><circle cx="7.5" cy="2.5" r="1.5"/><circle cx="2.5" cy="8" r="1.5"/><circle cx="7.5" cy="8" r="1.5"/><circle cx="2.5" cy="13.5" r="1.5"/><circle cx="7.5" cy="13.5" r="1.5"/></svg>';
-
-      const thumb = document.createElement('button');
-      thumb.type = 'button';
-      thumb.setAttribute('aria-label', `Edit page ${idx + 1}`);
-      thumb.className = 'relative w-20 h-24 bg-fh-card overflow-hidden shrink-0 flex items-center justify-center active:scale-95 transition-transform';
-      thumb.addEventListener('click', () => openStudio(page.id));
+      const sheet = document.createElement('div');
+      sheet.className = 'page-sheet';
+      sheet.setAttribute('role', 'button');
+      sheet.tabIndex = 0;
+      sheet.setAttribute('aria-label', `Edit page ${idx + 1}`);
+      sheet.addEventListener('click', () => openStudio(page.id));
+      sheet.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openStudio(page.id);
+        }
+      });
       const img = document.createElement('img');
       img.src = page.processedUrl;
       img.alt = '';
       img.decoding = 'async';
-      img.className = 'w-full h-full object-contain bg-white';
-      const badge = document.createElement('span');
-      badge.className = 'absolute top-0 left-0 px-1.5 py-0.5 bg-fh-navy text-white text-[10px] font-bold';
-      badge.textContent = `P${idx + 1}`;
-      thumb.append(img);
+      img.draggable = false;
+      img.className = 'w-full h-full object-contain';
+      sheet.appendChild(img);
 
-      const info = document.createElement('div');
-      info.className = 'flex-1 min-w-0 space-y-1.5';
+      const caption = document.createElement('div');
+      caption.className = 'mt-2.5 flex items-baseline justify-between gap-2 px-0.5';
+      const num = document.createElement('span');
+      num.className = 'font-display text-[15px] font-extrabold';
+      num.textContent = `Page ${idx + 1}`;
+      const look = document.createElement('span');
+      look.className = 'text-xs font-medium text-muted truncate';
+      look.textContent = `${FILTER_LABELS[page.filter] || 'Original'}, ${formatBytes(page.processedSize)}`;
+      caption.append(num, look);
 
-      const titleRow = document.createElement('div');
-      titleRow.className = 'flex items-center justify-between gap-2';
-      const title = document.createElement('span');
-      title.className = 'font-display text-3xl font-extrabold text-fh-blue leading-none';
-      title.textContent = String(idx + 1).padStart(2, '0');
-      title.setAttribute('aria-hidden', 'true');
-      const chip = document.createElement('span');
-      chip.className = `px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${
-        page.filter === 'magic' ? 'bg-fh-blue text-white' : page.filter === 'bw' ? 'bg-fh-navy text-white' : 'bg-fh-card text-fh-navy'
-      }`;
-      chip.textContent = FILTER_LABELS[page.filter] || 'Original';
-      titleRow.append(title, chip);
-
-      const meta = document.createElement('div');
-      meta.className = 'text-xs text-fh-muted flex items-center gap-2 flex-wrap';
-      const fmt = page.processedType === 'image/png' ? 'PNG' : 'JPEG';
-      meta.textContent = `${page.processedWidth} × ${page.processedHeight} • ${formatBytes(page.processedSize)} • ${fmt}`;
-
-      const editBtn = document.createElement('button');
-      editBtn.type = 'button';
-      editBtn.className = 'min-h-[40px] w-full px-3 py-1.5 bg-fh-blue hover:bg-fh-bluedark active:scale-[0.98] text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-all';
-      editBtn.innerHTML = `<svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">${ICONS.sliders}</svg><span>Crop &amp; Filter</span>`;
-      editBtn.setAttribute('aria-label', `Crop and filter page ${idx + 1}`);
-      editBtn.addEventListener('click', () => openStudio(page.id));
-
-      info.append(titleRow, meta, editBtn);
-      top.append(handle, thumb, info);
-
-      const controls = document.createElement('div');
-      controls.className = 'grid grid-cols-4 gap-1';
-      controls.append(
-        makeCardBtn('rotate', 'Rotate', `Rotate page ${idx + 1}`, ICONS.rotate, false, false, () => rotatePageCard(page.id)),
-        makeCardBtn('up', 'Up', `Move page ${idx + 1} up`, ICONS.up, idx === 0, false, () => movePage(idx, -1)),
-        makeCardBtn('down', 'Down', `Move page ${idx + 1} down`, ICONS.down, idx === count - 1, false, () => movePage(idx, 1)),
-        makeCardBtn('delete', 'Delete', `Delete page ${idx + 1}`, ICONS.del, false, true, () => deletePage(page.id))
+      const tools = document.createElement('div');
+      tools.className = 'mt-1 flex items-center justify-between';
+      tools.append(
+        makeCardBtn('left', `Move page ${idx + 1} earlier`, ICONS.left, idx === 0, false, () => movePage(idx, -1)),
+        makeCardBtn('rotate', `Rotate page ${idx + 1}`, ICONS.rotate, false, false, () => rotatePageCard(page.id)),
+        makeCardBtn('delete', `Remove page ${idx + 1}`, ICONS.del, false, true, () => deletePage(page.id)),
+        makeCardBtn('right', `Move page ${idx + 1} later`, ICONS.right, idx === count - 1, false, () => movePage(idx, 1))
       );
 
-      card.append(top, controls);
+      card.append(sheet, caption, tools);
       el.pageList.appendChild(card);
     });
   }
 
-  function makeCardBtn(act, label, aria, svgPath, disabled, danger, onClick) {
+  function makeCardBtn(act, aria, svgPath, disabled, danger, onClick) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.dataset.act = act;
     btn.disabled = disabled;
     btn.setAttribute('aria-label', aria);
-    btn.className = `min-h-[44px] px-2 text-xs font-semibold flex items-center justify-center gap-1 transition-all active:scale-95 ${
-      danger ? 'bg-fh-card text-fh-coraltext hover:bg-fh-rule' : 'bg-fh-card text-fh-navy hover:bg-fh-rule disabled:opacity-35 disabled:pointer-events-none'
-    }`;
-    btn.innerHTML = `<svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">${svgPath}</svg><span class="hidden sm:inline">${label}</span>`;
+    btn.title = aria;
+    btn.className = `page-tool ${danger ? 'text-danger' : ''}`;
+    btn.innerHTML = `<svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">${svgPath}</svg>`;
     btn.addEventListener('click', onClick);
     return btn;
   }
@@ -1560,8 +1536,12 @@
   function initSortable() {
     if (typeof window.Sortable === 'undefined') return;
     window.Sortable.create(el.pageList, {
-      handle: '.drag-handle',
-      animation: 160,
+      animation: 180,
+      delay: 220,
+      delayOnTouchOnly: true,
+      touchStartThreshold: 6,
+      filter: 'button',
+      preventOnFilter: false,
       ghostClass: 'sortable-ghost',
       chosenClass: 'sortable-chosen',
       onEnd: (evt) => {
@@ -1579,10 +1559,11 @@
     const sizeKey = el.pageSizeSelect.value;
     const isFit = sizeKey === 'fit';
     el.orientationSelect.disabled = isFit;
-    const orientMap = { auto: 'Auto', portrait: 'Portrait', landscape: 'Landscape' };
-    const orientLabel = isFit ? 'Exact Fit' : orientMap[el.orientationSelect.value];
-    const marginLabel = el.marginSelect.value === '0' ? 'No margin' : `${el.marginSelect.value}mm margin`;
-    el.settingsSummary.textContent = `${PAGE_SIZES_MM[sizeKey].label} • ${orientLabel} • ${marginLabel} • ${QUALITY_PRESETS[el.qualitySelect.value].label}`;
+    const size = { a4: 'A4', letter: 'US Letter', fit: 'Fit to photo' }[sizeKey];
+    const orient = isFit ? '' : `, ${el.orientationSelect.value === 'auto' ? 'auto' : el.orientationSelect.value} orientation`;
+    const margin = el.marginSelect.value === '0' ? 'no margins' : `${el.marginSelect.value} mm margins`;
+    const quality = { high: 'high quality', balanced: 'balanced quality', small: 'smallest file' }[el.qualitySelect.value];
+    el.settingsSummary.textContent = `${size}${orient}, ${margin}, ${quality}`;
   }
 
   async function blobBytes(blob) {
@@ -1636,12 +1617,12 @@
     const total = pages.length;
     if (!total) return;
 
-    showProgress('Creating PDF', 'Loading PDF engine...', 3);
+    showProgress('Making your PDF', 'Getting ready', 3);
     try {
       await loadScript(LIB_URLS.jspdf);
     } catch (_) {
       hideProgress();
-      showToast('PDF engine failed to load. Check your connection and retry.', 'error', 4500);
+      showToast('The PDF maker didn’t load. Connect to the internet once, then try again.', 'error', 4500);
       return;
     }
     const { jsPDF } = window.jspdf;
@@ -1657,7 +1638,7 @@
     try {
       let pdf = null;
       for (let i = 0; i < total; i++) {
-        showProgress('Creating PDF', `Packaging page ${i + 1} of ${total}...`, Math.round(((i + 0.35) / total) * 90) + 4);
+        showProgress('Making your PDF', `Page ${i + 1} of ${total}`, Math.round(((i + 0.35) / total) * 90) + 4);
         await nextFrame();
         const img = await preparePageForPdf(pages[i], preset);
 
@@ -1695,8 +1676,9 @@
         pdf.addImage(img.data, img.format, imgX, imgY, imgW, imgH, `p${i}`, 'FAST');
       }
 
-      showProgress('Finalizing PDF', 'Saving file...', 96);
+      showProgress('Making your PDF', 'Almost done', 96);
       await nextFrame();
+      pdf.setProperties({ title: filename.replace(/\.pdf$/i, ''), creator: 'PocketPDF by BigPharmi', author: 'BigPharmi' });
       const pdfBlob = pdf.output('blob');
       if (state.lastPdf && state.lastPdf.url) URL.revokeObjectURL(state.lastPdf.url);
       const url = URL.createObjectURL(pdfBlob);
@@ -1714,13 +1696,13 @@
       if (!canShareFile) triggerDownload(url, filename);
 
       hideProgress();
-      el.pdfReadyMeta.textContent = `${filename} • ${formatBytes(pdfBlob.size)}`;
+      el.pdfReadyMeta.textContent = `${filename}, ${formatBytes(pdfBlob.size)}`;
       el.pdfShareBtn.classList.toggle('hidden', !canShareFile);
       openModal(el.pdfReadyModal, canShareFile ? el.pdfShareBtn : el.pdfReadyCloseBtn);
     } catch (err) {
       console.error('PDF creation error:', err);
       hideProgress();
-      showToast('PDF creation failed. Try "Small File" quality.', 'error', 4500);
+      showToast('The PDF couldn’t be made. Set Quality to “Smallest file” and try again.', 'error', 4500);
     }
   }
 
@@ -1737,7 +1719,7 @@
           if (!nw) return;
           nw.addEventListener('statechange', () => {
             if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-              showToast('A new version is ready.', 'info', 10000, {
+              showToast('A new version of PocketPDF is ready.', 'info', 10000, {
                 label: 'Reload',
                 onClick: () => {
                   nw.postMessage('skipWaiting');
@@ -1814,7 +1796,7 @@
         const file = new File([state.lastPdf.blob], state.lastPdf.filename, { type: 'application/pdf' });
         await navigator.share({ files: [file], title: state.lastPdf.filename });
       } catch (err) {
-        if (err && err.name !== 'AbortError') showToast('Sharing unavailable — use Download instead.', 'info', 2800);
+        if (err && err.name !== 'AbortError') showToast('Sharing isn’t available here. Use Download PDF instead.', 'info', 2800);
       }
     });
     el.pdfReadyCloseBtn.addEventListener('click', () => closeModal(el.pdfReadyModal));
@@ -1847,10 +1829,10 @@
     el.cropAutoBtn.addEventListener('click', async () => {
       if (!studio.rotatedSourceCanvas) return;
       if (!state.cvReady) {
-        showToast('Loading auto-crop engine…', 'info', 2000);
+        showToast('Starting auto-crop', 'info', 2000);
         const ok = await ensureOpenCV();
         if (!ok) {
-          showToast('Auto-crop unavailable — adjust the corners manually.', 'warning', 3000);
+          showToast('Auto-crop isn’t available. Drag the handles to the page corners.', 'warning', 3000);
           return;
         }
         if (!studio.isOpen || !studio.rotatedSourceCanvas) return;
@@ -1858,7 +1840,7 @@
       const res = detectDocumentCorners(studio.rotatedSourceCanvas);
       studio.corners = res.corners;
       drawCropOverlay();
-      showToast(res.detected ? 'Document edges detected!' : 'No clear border found — using inset crop.', res.detected ? 'success' : 'info', 2200);
+      showToast(res.detected ? 'Found the page edges' : 'No clear edges found. Drag the handles to the page corners.', res.detected ? 'success' : 'info', 2600);
     });
 
     el.cropFullBtn.addEventListener('click', () => {
@@ -1889,7 +1871,7 @@
       studio.aspect = ASPECT_ORDER[(i + 1) % ASPECT_ORDER.length];
       updateAspectUI();
       showToast(
-        studio.aspect === 'auto' ? 'Page shape: measured from the photo' : `Page shape snapped to ${ASPECTS[studio.aspect].label} proportions`,
+        studio.aspect === 'auto' ? 'Page shape: as photographed' : `Page shape set to ${ASPECTS[studio.aspect].label}`,
         'info',
         1800
       );
