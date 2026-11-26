@@ -1,5 +1,5 @@
 /* PocketPDF Scanner — service worker: offline app shell + cached libraries. */
-const VERSION = 'v2.0.0';
+const VERSION = 'v2.0.1'; // must match index.html, js/app.js and css/app.css (see set-version.sh)
 const SHELL_CACHE = `pocketpdf-shell-${VERSION}`;
 const LIB_CACHE = 'pocketpdf-libs-v1'; // bump only when files in vendor/ change
 
@@ -24,13 +24,42 @@ const SHELL = [
 // Small libraries cached up-front; OpenCV (~10 MB) and heic2any are cached the first time they are used.
 const LIBS = ['vendor/Sortable.min.js', 'vendor/jspdf.umd.min.js'];
 
+// Files that carry the version marker. If any of them comes back without it, the server
+// (GitHub's CDN) hasn't caught up yet: the install is abandoned and retried later, so the
+// offline copy is never a mix of old and new files.
+const VERSIONED = ['index.html', 'css/app.css', 'js/app.js'];
+
+/** Fetch a file straight from the origin: a never-seen query string misses every CDN cache. */
+async function fetchFresh(path) {
+  const url = new URL(path, self.location.href);
+  url.searchParams.set('sw', VERSION);
+  const res = await fetch(url.href, { cache: 'no-store' });
+  if (!res.ok) throw new Error(`Fetch failed for ${path}: ${res.status}`);
+  return res;
+}
+
+async function precache(cacheName, paths, checkVersion) {
+  const responses = await Promise.all(paths.map(async (path) => {
+    const res = await fetchFresh(path);
+    if (checkVersion && VERSIONED.includes(path)) {
+      const text = await res.clone().text();
+      if (!text.includes(VERSION)) throw new Error(`Stale copy of ${path}; will retry later`);
+    }
+    return [path, res];
+  }));
+  const cache = await caches.open(cacheName);
+  await Promise.all(responses.map(([path, res]) => cache.put(new URL(path, self.location.href).href, res)));
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     Promise.all([
-      // cache: 'reload' bypasses the browser's HTTP cache so an update never stores stale files
-      caches.open(SHELL_CACHE).then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: 'reload' })))),
-      caches.open(LIB_CACHE).then((c) => c.addAll(LIBS.map((u) => new Request(u, { cache: 'reload' })))),
-    ])
+      precache(SHELL_CACHE, SHELL, true),
+      precache(LIB_CACHE, LIBS, false),
+    ]).catch(async (err) => {
+      await caches.delete(SHELL_CACHE);
+      throw err;
+    })
   );
 });
 

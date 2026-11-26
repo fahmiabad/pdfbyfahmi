@@ -32,8 +32,12 @@ vendor/                Self-hosted libraries: jsPDF, OpenCV.js, heic2any, Sortab
 ```
 
 ## Updating the app
-After you change any file, bump `VERSION` at the top of `sw.js` (e.g. `v1.0.1`). Users then see a "new version is ready → Reload" prompt.
-If you replace anything in `vendor/`, also bump `LIB_CACHE`.
+After changing any file, give the release a new version number:
+```
+./set-version.sh v2.0.2
+```
+This stamps the version into `sw.js`, `index.html`, `js/app.js` and `css/app.css`. Phones only save an update for offline use once all four files from the server carry the same version, so a half-published update (GitHub's servers can take a few minutes to refresh) is never saved. When nothing is in progress the app switches to the new version by itself; otherwise it shows an Update button.
+If you replace anything in `vendor/`, also bump `LIB_CACHE` in `sw.js`.
 
 ## Testing locally
 ```

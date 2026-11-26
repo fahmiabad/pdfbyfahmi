@@ -9,6 +9,7 @@
   'use strict';
 
   // ==================== CONSTANTS ====================
+  const APP_VERSION = 'v2.0.1'; // must match sw.js, index.html and css/app.css (see set-version.sh)
   const MAX_SOURCE_DIM = 2200;
   const PROXY_MAX_DIM = 1000;
   const DETECT_MAX_DIM = 500;
@@ -1707,33 +1708,76 @@
   }
 
   // ==================== SERVICE WORKER ====================
+  /** True when the app is between tasks, so switching to a new version can't interrupt anything. */
+  function isIdle() {
+    return !studio.isOpen && el.progressModal.classList.contains('hidden') && !state.pdfInProgress;
+  }
+
+  /**
+   * Self-heal: if this script and the page it runs in are from different versions (a phone that
+   * saved a half-updated copy), drop the saved copy and reload once from the network.
+   */
+  function healVersionMismatch() {
+    const meta = document.querySelector('meta[name="app-version"]');
+    const pageVersion = meta ? meta.content : 'none';
+    if (pageVersion === APP_VERSION) return false;
+    try {
+      if (sessionStorage.getItem('pocketpdf.healed') === APP_VERSION) return false;
+      sessionStorage.setItem('pocketpdf.healed', APP_VERSION);
+    } catch (_) { /* private mode */ }
+    console.warn(`Page ${pageVersion} and script ${APP_VERSION} differ; refreshing the offline copy.`);
+    (async () => {
+      try {
+        const keys = await caches.keys();
+        await Promise.all(keys.filter((k) => k.startsWith('pocketpdf-shell-')).map((k) => caches.delete(k)));
+        const reg = navigator.serviceWorker && (await navigator.serviceWorker.getRegistration());
+        if (reg) await reg.update().catch(() => {});
+      } catch (_) { /* ignore */ }
+      location.reload();
+    })();
+    return true;
+  }
+
   function registerServiceWorker() {
     if (!('serviceWorker' in navigator)) return;
     const local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     if (location.protocol !== 'https:' && !local) return;
     const hadController = !!navigator.serviceWorker.controller;
+
+    let updateRequested = false;
+    const applyUpdate = (worker) => {
+      updateRequested = true;
+      worker.postMessage('skipWaiting');
+    };
+    const offerUpdate = (worker) => {
+      // Switch straight away when nothing is in progress; pages are saved, so a reload loses nothing.
+      if (isIdle()) {
+        applyUpdate(worker);
+        return;
+      }
+      showToast('A new version of PocketPDF is ready.', 'info', 30000, { label: 'Update', onClick: () => applyUpdate(worker) });
+    };
+
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').then((reg) => {
+        if (reg.waiting && navigator.serviceWorker.controller) offerUpdate(reg.waiting);
         reg.addEventListener('updatefound', () => {
           const nw = reg.installing;
           if (!nw) return;
           nw.addEventListener('statechange', () => {
-            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-              showToast('A new version of PocketPDF is ready.', 'info', 10000, {
-                label: 'Reload',
-                onClick: () => {
-                  nw.postMessage('skipWaiting');
-                },
-              });
-            }
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) offerUpdate(nw);
           });
+        });
+        // Check for a new version whenever the app comes back to the foreground
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') reg.update().catch(() => {});
         });
       }).catch((err) => console.warn('Service worker registration failed:', err));
 
-      // Only reload when an existing version is replaced (not on the very first install)
-      let reloaded = !hadController;
+      // Reload when a version is replaced, but not when the very first install takes control
+      let reloaded = false;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (reloaded) return;
+        if (reloaded || (!hadController && !updateRequested)) return;
         reloaded = true;
         location.reload();
       });
@@ -1935,6 +1979,7 @@
 
   // ==================== INIT ====================
   function init() {
+    if (healVersionMismatch()) return;
     const now = new Date();
     el.filenameInput.value = `scan_${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     loadSettings();
