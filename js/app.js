@@ -327,7 +327,7 @@
   function setEngineStatus(mode) {
     const base = 'inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 text-[11px] font-semibold ';
     const modes = {
-      idle: ['bg-fh-navyraised text-fh-mist', 'bg-fh-mist', 'Auto-Crop loads on first scan'],
+      idle: ['bg-fh-navyraised text-fh-mist', 'bg-fh-mist', 'Auto-Crop starts on first scan'],
       loading: ['bg-fh-navyraised text-fh-sky', 'bg-fh-sky animate-pulse', 'Loading Auto-Crop…'],
       ready: ['bg-fh-blue text-white', 'bg-fh-sky', 'Auto-Crop Ready'],
       manual: ['bg-fh-navyraised text-fh-mist', 'bg-fh-mist', 'Manual Crop Mode'],
@@ -397,6 +397,23 @@
       return false;
     })();
     return cvPromise;
+  }
+
+  /**
+   * Auto-crop is on by default: start loading OpenCV as soon as the page has settled.
+   * After the first visit it comes from the offline cache, so it's ready in a second or two.
+   * Skipped only when the phone's Data Saver is on (it then loads on the first scan instead).
+   */
+  function preloadOpenCV() {
+    const conn = navigator.connection;
+    if (conn && conn.saveData) return;
+    const start = () => ensureOpenCV();
+    const schedule = () => {
+      if ('requestIdleCallback' in window) window.requestIdleCallback(start, { timeout: 2000 });
+      else setTimeout(start, 800);
+    };
+    if (document.readyState === 'complete') schedule();
+    else window.addEventListener('load', schedule, { once: true });
   }
 
   // ==================== WEB WORKER ====================
@@ -1943,10 +1960,11 @@
     bindEvents();
     initSortable();
     updateSettingsSummary();
-    setEngineStatus('idle');
+    setEngineStatus(navigator.connection && navigator.connection.saveData ? 'idle' : 'loading');
     renderPageList();
     restoreSession();
     registerServiceWorker();
+    preloadOpenCV();
     if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
   }
 

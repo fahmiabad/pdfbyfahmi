@@ -42,7 +42,7 @@ python3 -m http.server 8000
 Then open http://localhost:8000. The service worker also runs on localhost. Opening `index.html` directly as a file works too, just without offline support or the background worker.
 
 ## Notes
-- OpenCV (~10 MB) loads only the first time someone scans, then stays cached for offline use.
+- Auto-crop (OpenCV, ~10 MB) starts loading as soon as the app opens and is cached for offline use after the first visit. With Data Saver on, it waits until the first scan.
 - Pages are saved in the browser's IndexedDB, so they survive a reload or the phone closing the tab. "Clear All" erases them.
 - Libraries: jsPDF (MIT), OpenCV.js (Apache 2.0), heic2any (MIT), SortableJS (MIT). Fonts: Archivo and IBM Plex Sans (SIL Open Font License).
 - Visual style follows the "Fahmi Hassan" design system: navy/white, square solid blocks, Archivo headlines, coral for warnings only, blue for the main actions.

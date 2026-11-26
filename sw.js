@@ -1,5 +1,5 @@
 /* PocketPDF Scanner — service worker: offline app shell + cached libraries. */
-const VERSION = 'v1.1.1';
+const VERSION = 'v1.2.0';
 const SHELL_CACHE = `pocketpdf-shell-${VERSION}`;
 const LIB_CACHE = 'pocketpdf-libs-v1'; // bump only when files in vendor/ change
 
